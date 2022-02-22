@@ -1,2 +1,2 @@
-# LIDE_ESPOL_Joyce_Sarmiento
+# Descripción del repositorio
 Repositorio para las pasantías LIDE
