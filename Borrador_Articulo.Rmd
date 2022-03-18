@@ -81,7 +81,6 @@ for (i in 1:R) {
 
 ```{r}
 opinion_factor <- factor(acumulador)
-
 ```
 
 
