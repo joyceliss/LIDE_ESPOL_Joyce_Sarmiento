@@ -1,0 +1,103 @@
+---
+title: "Articulo LIDE"
+output: html_notebook
+---
+
+
+
+```{r}
+###############################################################
+####                   Descargar los datos                 ####
+###############################################################
+
+if(!require(readxl)) install.packages("readxl", repos = "http://cran.us.r-project.org")
+
+```
+
+
+
+```{r}
+# Base de datos de personas ----------
+# Le damos un nombre al url
+url <- "https://github.com/joyceliss/LIDE_ESPOL_Joyce_Sarmiento/raw/main/Base%20de%20datos.zip"
+# Creamos un directorio temporal
+td <- tempdir()
+# Creamos una carpeta temporal
+tf <- tempfile(tmpdir=td, fileext = ".zip")
+# Descargamos los discap en la carpeta temporal
+download.file(url,tf)
+```
+
+
+```{r}
+# Obtenemos el nombre del archivo dentro del archivo zip, lo descomprimimos (unzip), obtenemos el nombre del 
+# parche, y finalmente lo cargamos
+WVs.f.name <- unzip(tf, list=TRUE)[1,1]
+WV6.f.name <- unzip(tf, list=TRUE)[2,1]
+
+unzip(tf, files=WVs.f.name, exdir=td, overwrite=TRUE)
+unzip(tf, files=WV6.f.name, exdir=td, overwrite=TRUE)
+
+WVs.f.path <- file.path(td, WVs.f.name)
+WV6.f.path <- file.path(td, WV6.f.name)
+
+data2018 <- read_excel(WVs.f.path)
+data2013 <- read_excel(WV6.f.path)
+
+```
+
+
+
+
+```{r}
+sexo <- data2018$`Q260: Sex`
+edad <- data2018$`Q262: Age`
+edad_intervalos <- data2018$`X003R: Age recoded (6 intervals)`
+nivel_educativo <- data2018$`Q275R: Highest educational level: Respondent (recoded into 3 groups)`
+religion <- data2018$`Q289: Religious denominations - major groups`
+aborto2018 <- data2018$`Q184: Justifiable: Abortion`
+aborto2013 <- data2013$`V204: Justifiable: Abortion`
+
+data_aborto2018 <- data.frame(sexo, edad, edad_intervalos, nivel_educativo, religion, aborto2018)
+data_aborto2013 <- data.frame(aborto2013)
+str(data_aborto2013)
+
+
+
+```
+
+
+```{r}
+R = length(aborto2018)
+acumulador <- rep(0,R)
+
+for (i in 1:R) {
+  if ((aborto2018[i] <= 6) & (aborto2018[i] >=1)) {acumulador[i] <- 'No justifica'}
+  else if (aborto2018[i] >= 7 ) {acumulador[i] <- 'Justifica'}
+  else if (aborto2018[i] < 1) {acumulador[i] <- 'No Aplica'} 
+}
+```
+
+
+```{r}
+opinion_factor <- factor(acumulador)
+
+```
+
+
+```{r}
+summary(opinion_factor)
+```
+
+
+```{r}
+#data_aborto2013$aborto2013Dico <- if(data_aborto2013$aborto2013<=6) {0} else {1}
+```
+
+
+
+
+
+
+
+

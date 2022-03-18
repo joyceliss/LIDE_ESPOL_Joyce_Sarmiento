@@ -8,6 +8,8 @@ data2018 <- read_excel("C:/Users/Holger/Desktop/Joyce/Proyectos R/F00010936-WVS_
 data2013 <- read_excel("C:/Users/Holger/Desktop/Joyce/Proyectos R/F00007586-WV6_Data_Ecuador_Excel_v20201117.xlsx")
 
 
+
+
 sexo <- data2018$`Q260: Sex`
 edad <- data2018$`Q262: Age`
 edad_intervalos <- data2018$`X003R: Age recoded (6 intervals)`
