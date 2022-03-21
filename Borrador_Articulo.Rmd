@@ -5,19 +5,18 @@ output: html_notebook
 
 
 
-```{r}
-###############################################################
-####                   Descargar los datos                 ####
-###############################################################
-
+```{r Instalar y cargar los paquetes}
+if(!require(tidyverse)) install.packages("tidyverse", repos = "http://cran.us.r-project.org")
 if(!require(readxl)) install.packages("readxl", repos = "http://cran.us.r-project.org")
-
+if(!require(ggplot2)) install.packages("ggplot2", repos = "http://cran.us.r-project.org")
+library(tidyverse)
+library(ggplot2)
+library(readxl)
 ```
 
 
 
-```{r}
-# Base de datos de personas ----------
+```{r Descargar Bases de datos}
 # Le damos un nombre al url
 url <- "https://github.com/joyceliss/LIDE_ESPOL_Joyce_Sarmiento/raw/main/Base%20de%20datos.zip"
 # Creamos un directorio temporal
@@ -29,7 +28,7 @@ download.file(url,tf)
 ```
 
 
-```{r}
+```{r Crear Bases de datos}
 # Obtenemos el nombre del archivo dentro del archivo zip, lo descomprimimos (unzip), obtenemos el nombre del 
 # parche, y finalmente lo cargamos
 WVs.f.name <- unzip(tf, list=TRUE)[1,1]
@@ -49,7 +48,7 @@ data2013 <- read_excel(WV6.f.path)
 
 
 
-```{r}
+```{r Data Frame con los datos de interes}
 sexo <- data2018$`Q260: Sex`
 edad <- data2018$`Q262: Age`
 edad_intervalos <- data2018$`X003R: Age recoded (6 intervals)`
@@ -60,14 +59,10 @@ aborto2013 <- data2013$`V204: Justifiable: Abortion`
 
 data_aborto2018 <- data.frame(sexo, edad, edad_intervalos, nivel_educativo, religion, aborto2018)
 data_aborto2013 <- data.frame(aborto2013)
-str(data_aborto2013)
-
-
-
 ```
 
 
-```{r}
+```{r Variable Dummy del 2018}
 R = length(aborto2018)
 acumulador <- rep(0,R)
 
@@ -76,22 +71,49 @@ for (i in 1:R) {
   else if (aborto2018[i] >= 7 ) {acumulador[i] <- 'Justifica'}
   else if (aborto2018[i] < 1) {acumulador[i] <- 'No Aplica'} 
 }
+data_aborto2018$abortoDummy2018 <- unlist(acumulador2018)
 ```
 
 
-```{r}
-opinion_factor <- factor(acumulador)
+```{r Variable Dummy del 2013}
+R = length(aborto2013)
+acumulador2013 <- rep(0,R)
+for (i in 1:R) {
+  if ((aborto2013[i] <= 6) & (aborto2013[i] >=1)) {acumulador2013[i] <- 'No justifica'}
+  else if (aborto2013[i] >= 7 ) {acumulador2013[i] <- 'Justifica'}
+  else if (aborto2013[i] < 1) {acumulador2013[i] <- 'No Aplica'} 
+}
+data_aborto2013$abortoDummy2013 <- unlist(acumulador2013)
 ```
 
 
-```{r}
-summary(opinion_factor)
+```{r Comparacion entre 2013 y 2018}
+ggplot(data_aborto2013, aes(x = abortoDummy2013)) + geom_bar() + labs(
+  title = "Justifica o No justifica el aborto",
+  x = "Respuesta",
+  y = "Cantidad" 
+  )
+ggplot(data_aborto2018, aes(x = abortoDummy2018)) + geom_bar() + labs(
+  title = "Justifica o No justifica el aborto",
+  x = "Respuesta",
+  y = "Cantidad" 
+)
 ```
 
 
-```{r}
-#data_aborto2013$aborto2013Dico <- if(data_aborto2013$aborto2013<=6) {0} else {1}
+```{r Comparacion entre hombres y mujeres}
+sexo_labs <- c("Hombre", "Mujer")
+names(sexo_labs) <- c("1", "2")
+ggplot(data_aborto2018, aes(x = abortoDummy2018)) + geom_bar() + facet_wrap(~sexo, labeller = labeller(sexo = sexo_labs)) + labs(
+  title = "Justifica o No justifica el aborto",
+  x = "Respuesta",
+  y = "Cantidad" 
+)
 ```
+
+
+
+
 
 
 
