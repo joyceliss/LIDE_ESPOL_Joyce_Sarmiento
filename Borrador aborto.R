@@ -4,7 +4,6 @@ if(!require(readxl)) install.packages("readxl", repos = "http://cran.us.r-projec
 if(!require(ggplot2)) install.packages("ggplot2", repos = "http://cran.us.r-project.org")
 if(!require(scales)) install.packages("scales", repos = "http://cran.us.r-project.org")
 
-
 #cargar las librerias
 library(tidyverse)
 library(ggplot2)
@@ -47,14 +46,17 @@ aborto2013 <- data2013$`V204: Justifiable: Abortion`
 data_aborto2018 <- data.frame(sexo, edad, edad_intervalos, nivel_educativo, religion, aborto2018)
 data_aborto2013 <- data.frame(aborto2013)
 
+#Filtro de las bases sin numeros negativos
+data_aborto2018 <- data_aborto2018 %>%
+  filter(aborto2018 >= 1, nivel_educativo >= 0, religion >= 0)
 
 #Creación de variable dicotomica sobre el pensamiento del aborto 2018
-R = length(aborto2018)
+R = length(data_aborto2018$aborto2018)
 acumulador2018 <- rep(0,R)
 for (i in 1:R) {
-  if ((aborto2018[i] <= 6) & (aborto2018[i] >=1)) {acumulador2018[i] <- 'No justifica'}
-  else if (aborto2018[i] >= 7 ) {acumulador2018[i] <- 'Justifica'}
-  else if (aborto2018[i] < 1) {acumulador2018[i] <- 'No Aplica'} 
+  if ((data_aborto2018$aborto2018[i] <= 6) & (data_aborto2018$aborto2018[i] >=1)) {acumulador2018[i] <- 'No justifica'}
+  else if (data_aborto2018$aborto2018[i] >= 7 ) {acumulador2018[i] <- 'Justifica'}
+  else if (data_aborto2018$aborto2018[i] < 1) {acumulador2018[i] <- 'No Aplica'} 
 }
 data_aborto2018$abortoDummy2018 <- unlist(acumulador2018)
 
@@ -68,41 +70,115 @@ for (i in 1:R) {
 }
 data_aborto2013$abortoDummy2013 <- unlist(acumulador2013)
 
+
 #Comparación entre pensamiento del aborto del 2013 y 2018
 ggplot(data_aborto2013, aes(x = abortoDummy2013)) + geom_bar() + labs(
-  title = "Justifica o No justifica el aborto",
+  title = "Justifica o No justifica el aborto en el año 2013",
   x = "Respuesta",
   y = "Cantidad" 
   )
+
 ggplot(data_aborto2018, aes(x = abortoDummy2018)) + geom_bar() + labs(
-  title = "Justifica o No justifica el aborto",
+  title = "Justifica o No justifica el aborto en el año 2018",
   x = "Respuesta",
   y = "Cantidad" 
-)
+  )
 
 
 #Visualizacion de datos del 2018
 #Comparación Hombre vs Mujer
 sexo_labs <- c("Hombre", "Mujer")
 names(sexo_labs) <- c("1", "2")
-ggplot(data_aborto2018, aes(x = abortoDummy2018)) + geom_bar() + facet_wrap(~sexo, labeller = labeller(sexo = sexo_labs)) + labs(
-  title = "Justifica o No justifica el aborto",
+
+ggplot(data_aborto2018, aes(x = abortoDummy2018, y = (..count..)/sum(..count..), fill = abortoDummy2018)) + geom_bar() + facet_wrap(~sexo, labeller = labeller(sexo = sexo_labs), scales = "free") + labs(
+  title = "Justifica o No Justifica el Aborto",
   x = "Respuesta",
-  y = "Cantidad" 
-)
+  y = NULL 
+) + guides(fill=FALSE) + geom_text(stat='count',aes(label = paste(round((..count..)/sum(..count..)*100), "%")), vjust=-0.5, size=2.5) + 
+  theme(
+    rect = element_blank(),
+  )
+
+
+#Filtro entre hombres y mujeres
+data_aborto2018_Man <- data_aborto2018 %>%
+  filter(sexo == 1)
+data_aborto2018_Woman <- data_aborto2018 %>%
+  filter(sexo == 2)
 
 #Comparación Nivel educativo dividio por hombre y mujer
-nivel_educativo_labs <- c("No respuesta", "No respuesta", "Inferior", "Medio", "Superior")
-names(nivel_educativo_labs) <- c("-2", "-5", "1", "2", "3")
-ggplot(data_aborto2018, aes(x = abortoDummy2018)) + geom_bar() + facet_wrap(~sexo+nivel_educativo, labeller = labeller(sexo = sexo_labs, nivel_educativo = nivel_educativo_labs))
+nivel_educativo_labs <- c("Inferior", "Medio", "Superior")
+names(nivel_educativo_labs) <- c("1", "2", "3")
+
+ggplot(data_aborto2018_Man, aes(x = abortoDummy2018, y = (..count..)/sum(..count..), fill = abortoDummy2018)) + geom_bar() + facet_wrap(~sexo+nivel_educativo, labeller = labeller(sexo = sexo_labs, nivel_educativo = nivel_educativo_labs)) + labs(
+  title = "Justifica o No Justifica el Aborto",
+  x = "Respuesta",
+  y = NULL 
+) + guides(fill=FALSE) + geom_text(stat='count',aes(label = paste(round((..count..)/sum(..count..)*100), "%")), vjust=-0.5, size=2.5) + 
+  theme(
+    rect = element_blank()
+  )
+
+
+nivel_educativo_labs <- c("Inferior", "Medio", "Superior")
+names(nivel_educativo_labs) <- c("1", "2", "3")
+
+ggplot(data_aborto2018_Woman, aes(x = abortoDummy2018, y = (..count..)/sum(..count..), fill = abortoDummy2018)) + geom_bar() + facet_wrap(~sexo+nivel_educativo, labeller = labeller(sexo = sexo_labs, nivel_educativo = nivel_educativo_labs)) + labs(
+  title = "Justifica o No Justifica el Aborto",
+  x = "Respuesta",
+  y = NULL 
+) + guides(fill=FALSE) + geom_text(stat='count',aes(label = paste(round((..count..)/sum(..count..)*100), "%")), vjust=-0.5, size=2.5) + 
+  theme(
+    rect = element_blank())
 
 #Comparación edades dividio por hombre y mujer
 edad_intervalos_labs <- c("16 a 24 años", "25 a 34 años", "35 a 44 años", "45 a 54 años", "55 a 64 años", "mayor a 65 años")
 names(edad_intervalos_labs) <- c("1", "2", "3", "4", "5", "6")
-ggplot(data_aborto2018, aes(x = abortoDummy2018)) + geom_bar() + facet_wrap(~sexo+edad_intervalos, labeller = labeller(sexo = sexo_labs, edad_intervalos = edad_intervalos_labs))
+
+ggplot(data_aborto2018_Man, aes(x = abortoDummy2018, y = (..count..)/sum(..count..), fill = abortoDummy2018)) + geom_bar() + facet_wrap(~sexo+edad_intervalos, labeller = labeller(sexo = sexo_labs, edad_intervalos = edad_intervalos_labs))+ labs(
+  title = "Justifica o No Justifica el Aborto",
+  x = "Respuesta",
+  y = NULL 
+) + guides(fill=FALSE) + geom_text(stat='count',aes(label = paste(round((..count..)/sum(..count..)*100), "%")), vjust=-0.5, size=2.5) + 
+  theme(
+    rect = element_blank())
+
+
+edad_intervalos_labs <- c("16 a 24 años", "25 a 34 años", "35 a 44 años", "45 a 54 años", "55 a 64 años", "mayor a 65 años")
+names(edad_intervalos_labs) <- c("1", "2", "3", "4", "5", "6")
+
+ggplot(data_aborto2018_Woman, aes(x = abortoDummy2018, y = (..count..)/sum(..count..), fill = abortoDummy2018)) + geom_bar() + facet_wrap(~sexo+edad_intervalos, labeller = labeller(sexo = sexo_labs, edad_intervalos = edad_intervalos_labs))+ labs(
+  title = "Justifica o No Justifica el Aborto",
+  x = "Respuesta",
+  y = NULL 
+) + guides(fill=FALSE) + geom_text(stat='count',aes(label = paste(round((..count..)/sum(..count..)*100), "%")), vjust=-0.5, size=2.5) + 
+  theme(
+    rect = element_blank())
+
+
 
 #Comparación religión dividio por hombre y mujer
-religion_labs <- c("No respuesta", "No respuesta", "No respuesta", "No creyente", "Catolico", "Protestante", "Ortodoxo", "Otro Cristiano", "Otro")
-names(religion_labs) <- c("-5", "-2", "-1", "0", "1", "2", "3", "8", "9")
-ggplot(data_aborto2018, aes(x = abortoDummy2018)) + geom_bar() + facet_wrap(~sexo+religion, labeller = labeller(sexo = sexo_labs, religion = religion_labs))
+religion_labs <- c("No creyente", "Catolico", "Protestante", "Ortodoxo", "Otro Cristiano", "Otro")
+names(religion_labs) <- c("0", "1", "2", "3", "8", "9")
+
+ggplot(data_aborto2018_Man, aes(x = abortoDummy2018, y = (..count..)/sum(..count..), fill = abortoDummy2018)) + geom_bar() + facet_wrap(~sexo+religion, labeller = labeller(sexo = sexo_labs, religion = religion_labs))+ labs(
+  title = "Justifica o No Justifica el Aborto",
+  x = "Respuesta",
+  y = NULL 
+) + guides(fill=FALSE) + geom_text(stat='count',aes(label = paste(round((..count..)/sum(..count..)*100), "%")), vjust=-0.5, size=2.5) + 
+  theme(
+    rect = element_blank())
+
+
+religion_labs <- c("No creyente", "Catolico", "Protestante", "Ortodoxo", "Otro Cristiano", "Otro")
+names(religion_labs) <- c("0", "1", "2", "3", "8", "9")
+
+ggplot(data_aborto2018_Woman, aes(x = abortoDummy2018, y = (..count..)/sum(..count..), fill = abortoDummy2018)) + geom_bar() + facet_wrap(~sexo+religion, labeller = labeller(sexo = sexo_labs, religion = religion_labs))+ labs(
+  title = "Justifica o No Justifica el Aborto",
+  x = "Respuesta",
+  y = NULL 
+) + guides(fill=FALSE) + geom_text(stat='count',aes(label = paste(round((..count..)/sum(..count..)*100), "%")), vjust=-0.5, size=2.5) + 
+  theme(
+    rect = element_blank())
+
 
