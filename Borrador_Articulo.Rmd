@@ -1,11 +1,11 @@
 ---
-title: "Articulo LIDE"
-output: html_notebook
+title: "Articulo LIDE sobre el Aborto"
+output:
+  html_document:
+    df_print: paged
 ---
 
-
-
-```{r Instalar y cargar los paquetes}
+```{r Instalar y cargar los paquetes, include = FALSE}
 if(!require(tidyverse)) install.packages("tidyverse", repos = "http://cran.us.r-project.org")
 if(!require(readxl)) install.packages("readxl", repos = "http://cran.us.r-project.org")
 if(!require(ggplot2)) install.packages("ggplot2", repos = "http://cran.us.r-project.org")
@@ -14,9 +14,7 @@ library(ggplot2)
 library(readxl)
 ```
 
-
-
-```{r Descargar Bases de datos}
+```{r Descargar Bases de datos, include = FALSE}
 # Le damos un nombre al url
 url <- "https://github.com/joyceliss/LIDE_ESPOL_Joyce_Sarmiento/raw/main/Base%20de%20datos.zip"
 # Creamos un directorio temporal
@@ -27,8 +25,7 @@ tf <- tempfile(tmpdir=td, fileext = ".zip")
 download.file(url,tf)
 ```
 
-
-```{r Crear Bases de datos}
+```{r Crear Bases de datos, include = FALSE}
 # Obtenemos el nombre del archivo dentro del archivo zip, lo descomprimimos (unzip), obtenemos el nombre del 
 # parche, y finalmente lo cargamos
 WVs.f.name <- unzip(tf, list=TRUE)[1,1]
@@ -45,10 +42,7 @@ data2013 <- read_excel(WV6.f.path)
 
 ```
 
-
-
-
-```{r Data Frame con los datos de interes}
+```{r Data Frame con los datos de interes, include = FALSE}
 sexo <- data2018$`Q260: Sex`
 edad <- data2018$`Q262: Age`
 edad_intervalos <- data2018$`X003R: Age recoded (6 intervals)`
@@ -61,21 +55,24 @@ data_aborto2018 <- data.frame(sexo, edad, edad_intervalos, nivel_educativo, reli
 data_aborto2013 <- data.frame(aborto2013)
 ```
 
+```{r Filtro de las bases sin numeros negativos, include = FALSE}
+data_aborto2018 <- data_aborto2018 %>%
+  filter(aborto2018 >= 1, nivel_educativo >= 0, religion >= 0)
+```
 
-```{r Variable Dummy del 2018}
-R = length(aborto2018)
-acumulador <- rep(0,R)
+```{r Variable Dummy del 2018, include = FALSE}
+R = length(data_aborto2018$aborto2018)
+acumulador2018 <- rep(0,R)
 
 for (i in 1:R) {
-  if ((aborto2018[i] <= 6) & (aborto2018[i] >=1)) {acumulador[i] <- 'No justifica'}
-  else if (aborto2018[i] >= 7 ) {acumulador[i] <- 'Justifica'}
-  else if (aborto2018[i] < 1) {acumulador[i] <- 'No Aplica'} 
+  if ((data_aborto2018$aborto2018[i] <= 6) & (data_aborto2018$aborto2018[i] >=1)) {acumulador2018[i] <- 'No justifica'}
+  else if (data_aborto2018$aborto2018[i] >= 7 ) {acumulador2018[i] <- 'Justifica'}
+  else if (data_aborto2018$aborto2018[i] < 1) {acumulador2018[i] <- 'No Aplica'} 
 }
 data_aborto2018$abortoDummy2018 <- unlist(acumulador2018)
 ```
 
-
-```{r Variable Dummy del 2013}
+```{r Variable Dummy del 2013, include = FALSE}
 R = length(aborto2013)
 acumulador2013 <- rep(0,R)
 for (i in 1:R) {
@@ -86,39 +83,145 @@ for (i in 1:R) {
 data_aborto2013$abortoDummy2013 <- unlist(acumulador2013)
 ```
 
+En el 2020 se publicó en la misma pagina el articulo **Aborto: ¿Qué piensan los ecuatorianos?** (https://elquantificador.org/post/valores/los-ecuatorianos-aprueban-el-aborto/), donde se usaba la Encuesta Mundial de Valores o World Values Survery (WVS), especificamente la encuesta que se realizo en el 2013 en Ecuador.
+Actualmente se puede conseguir la encuesta realizada en el 2018 en el país y en este tiempo podemos observar un cambio significativo el pensamiento de los ecuatorianos sobre si el aborto es justificado o no. Antes de graficarlos, vamos a crear una nueva variable que divida las respuestas en dos: "Justifica" y "No justifica". Las respuestas entre 1, que significa que nunca justifica, a 6 seran considerados como "No justifica" el aborto, mientras que las respuestas entre 7 a 10, que significa que siempre justifica, seran consideradas como "Justifica" el aborto. Posteriormente a eso, graficamos la variable de cada año por separado. 
 
-```{r Comparacion entre 2013 y 2018}
-ggplot(data_aborto2013, aes(x = abortoDummy2013)) + geom_bar() + labs(
-  title = "Justifica o No justifica el aborto",
+```{r Grafico del 2013, echo = FALSE, warning = FALSE, fig.dim = c(5,3)}
+ggplot(data_aborto2013, aes(x = abortoDummy2013, y = (..count..)/sum(..count..), fill = abortoDummy2013)) + geom_bar() + labs(
+  title = "Justifica o No justifica el aborto en el año 2013",
   x = "Respuesta",
   y = "Cantidad" 
+  ) + guides(fill=FALSE) + geom_text(stat='count',aes(label = paste(round((..count..)/sum(..count..)*100), "%")), vjust=-0.5, size=2.5) + 
+  theme(
+    rect = element_blank()
   )
-ggplot(data_aborto2018, aes(x = abortoDummy2018)) + geom_bar() + labs(
-  title = "Justifica o No justifica el aborto",
-  x = "Respuesta",
-  y = "Cantidad" 
-)
 ```
 
+```{r Grafico del 2018, echo = FALSE, warning = FALSE, fig.dim = c(5,3)}
+ggplot(data_aborto2018, aes(x = abortoDummy2018, y = (..count..)/sum(..count..), fill = abortoDummy2018)) + geom_bar() + labs(
+  title = "Justifica o No justifica el aborto en el año 2018",
+  x = "Respuesta",
+  y = "Cantidad" 
+  ) + guides(fill=FALSE) + geom_text(stat='count',aes(label = paste(round((..count..)/sum(..count..)*100), "%")), vjust=-0.5, size=2.5) + 
+  theme(
+    rect = element_blank()
+  )
+```
 
-```{r Comparacion entre hombres y mujeres}
+En el grafico observamos un aumento del porcentaje de las personas que justifican el aborto, siendo una diferencia de 5% entre ambos años. Los que no justifican el aborto pasaron de ser 94% a 89% en 5 años (entre el 2013 al 2018), mientras que los que justican el aborto aumentaron de 6% a 11%.
+Ahora que hemos visto que cambio ha pasado el país con respecto al pensamiento sobre el aborto, revisemos si existe un cambio con los factores, comenzando con el factor principal sobre el sexo de la persona. Además, revisaremos como afectan los otros factores, que son la edad, el nivel educativo y la religión, dividiendo a las personas por su sexo, así podemos observar como afectan esos factores a los hombres y a las mujeres.
+
+## ¿Comó afectan los factores en la justificación sobre el aborto?
+
+El primer factor que revisaremos, y uno que mantendremos en los siguientes factores, es el sexo de la persona. Dividimos la población entre hombres y mujeres y revisaremos que contestaron sobre el aborto y si lo justifican o no.
+
+```{r Comparacion entre hombres y mujeres, echo = FALSE, warning = FALSE, fig.dim = c(5,3)}
 sexo_labs <- c("Hombre", "Mujer")
 names(sexo_labs) <- c("1", "2")
-ggplot(data_aborto2018, aes(x = abortoDummy2018)) + geom_bar() + facet_wrap(~sexo, labeller = labeller(sexo = sexo_labs)) + labs(
-  title = "Justifica o No justifica el aborto",
+
+ggplot(data_aborto2018, aes(x = abortoDummy2018, y = (..count..)/sum(..count..), fill = abortoDummy2018)) + geom_bar() + facet_wrap(~sexo, labeller = labeller(sexo = sexo_labs), scales = "free") + labs(
+  title = "Justifica o No Justifica el Aborto",
   x = "Respuesta",
-  y = "Cantidad" 
-)
+  y = NULL 
+) + guides(fill=FALSE) + geom_text(stat='count',aes(label = paste(round((..count..)/sum(..count..)*100), "%")), vjust=-0.5, size=2.5) + 
+  theme(
+    rect = element_blank(),
+  )
+
+```
+
+(Aqui iria el analisis del grafico, si tan solo el grafico estuviera bien)
+
+
+Ahora, revisaremos el factor de nivel de educación que esta dividido en tres: Inferior, Medio y Superior. Ese factor lo analizaremos separando a la poblacion entre Hombres y Mujeres. 
+
+```{r Filtro entre Hombres y Mujeres, include = FALSE}
+data_aborto2018_Man <- data_aborto2018 %>%
+  filter(sexo == 1)
+data_aborto2018_Woman <- data_aborto2018 %>%
+  filter(sexo == 2)
+```
+
+```{r Grafico Nivel educativo Hombre, echo = FALSE, warning = FALSE, fig.dim = c(5,3)}
+nivel_educativo_labs <- c("Inferior", "Medio", "Superior")
+names(nivel_educativo_labs) <- c("1", "2", "3")
+
+ggplot(data_aborto2018_Man, aes(x = abortoDummy2018, y = ..count../tapply(..count.., ..x.. ,sum)[..x..], fill = abortoDummy2018)) + geom_bar() + facet_wrap(~sexo+nivel_educativo, labeller = labeller(sexo = sexo_labs, nivel_educativo = nivel_educativo_labs), scales = "free") + labs(
+  title = "Justifica o No Justifica el Aborto",
+  x = "Respuesta",
+  y = NULL 
+) + guides(fill=FALSE) + geom_text(aes(y=..count../tapply(..count.., ..x.. ,sum)[..x..], label=scales::percent(..count../tapply(..count.., ..x.. ,sum)[..x..])), stat="count", position=position_dodge(0.9), vjust=-0.5, size=2.5) + 
+  theme(
+    rect = element_blank()
+  ) + scale_y_continuous(labels = scales::percent)
+```
+
+```{r Grafico Nivel educativo Mujer, echo = FALSE, warning = FALSE, fig.dim = c(5,3)}
+ggplot(data_aborto2018_Woman, aes(x = abortoDummy2018, y = (..count..)/sum(..count..), fill = abortoDummy2018)) + geom_bar() + facet_wrap(~sexo+nivel_educativo, labeller = labeller(sexo = sexo_labs, nivel_educativo = nivel_educativo_labs)) + labs(
+  title = "Justifica o No Justifica el Aborto",
+  x = "Respuesta",
+  y = NULL 
+) + guides(fill=FALSE) + geom_text(stat='count',aes(label = paste(round((..count..)/sum(..count..)*100), "%")), vjust=-0.5, size=2.5) + 
+  theme(
+    rect = element_blank())
+```
+
+(Aqui iria el analisis de los graficos, si tan solo los graficos estuvieran bien)
+
+El siguiente factor que se revisara son las edades de los encuestados, para este factor vamos a dividirlos en 6 grupos: de 16 a 24 años, de 25 a 34 años, de 35 a 44 años, de 45 a 54 años, de 55 a 64 años y mayores a 65 años. Al igual que el nivel educativo, vamos a mantener separado a las personas en Hombres y Mujeres.
+
+```{r Grafico edades Hombre, echo = FALSE, warning = FALSE, fig.dim = c(5,3)}
+edad_intervalos_labs <- c("16 a 24 años", "25 a 34 años", "35 a 44 años", "45 a 54 años", "55 a 64 años", "mayor a 65 años")
+names(edad_intervalos_labs) <- c("1", "2", "3", "4", "5", "6")
+
+ggplot(data_aborto2018_Man, aes(x = abortoDummy2018, y = (..count..)/sum(..count..), fill = abortoDummy2018)) + geom_bar() + facet_wrap(~sexo+edad_intervalos, labeller = labeller(sexo = sexo_labs, edad_intervalos = edad_intervalos_labs))+ labs(
+  title = "Justifica o No Justifica el Aborto",
+  x = "Respuesta",
+  y = NULL 
+) + guides(fill=FALSE) + geom_text(stat='count',aes(label = paste(round((..count..)/sum(..count..)*100), "%")), vjust=-0.5, size=2.5) + 
+  theme(
+    rect = element_blank())
+```
+
+```{r Grafico edades Mujer, echo = FALSE, warning = FALSE, fig.dim = c(5,3)}
+ggplot(data_aborto2018_Woman, aes(x = abortoDummy2018, y = (..count..)/sum(..count..), fill = abortoDummy2018)) + geom_bar() + facet_wrap(~sexo+edad_intervalos, labeller = labeller(sexo = sexo_labs, edad_intervalos = edad_intervalos_labs))+ labs(
+  title = "Justifica o No Justifica el Aborto",
+  x = "Respuesta",
+  y = NULL 
+) + guides(fill=FALSE) + geom_text(stat='count',aes(label = paste(round((..count..)/sum(..count..)*100), "%")), vjust=-0.5, size=2.5) + 
+  theme(
+    rect = element_blank())
 ```
 
 
+(Aqui iria el analisis de los graficos, si tan solo los graficos estuvieran bien)
+
+El ultimo factor que se revisara sera la religión de los encuestados, en este factor vamos a tener dividido las religiones que existen el país o que son mayoría, tendremos 6 categorías: No creyente, Catolico, Protestante, Ortodoxo, Otros Cristianos y Otros. Y al igual que los anteriores, mantendremos la division de Hombres y Mujeres.
+
+```{r Grafico religion Hombre, echo = FALSE, warning = FALSE, fig.dim = c(5,3)}
+religion_labs <- c("No creyente", "Catolico", "Protestante", "Ortodoxo", "Otro Cristiano", "Otro")
+names(religion_labs) <- c("0", "1", "2", "3", "8", "9")
+
+ggplot(data_aborto2018_Man, aes(x = abortoDummy2018, y = (..count..)/sum(..count..), fill = abortoDummy2018)) + geom_bar() + facet_wrap(~sexo+religion, labeller = labeller(sexo = sexo_labs, religion = religion_labs))+ labs(
+  title = "Justifica o No Justifica el Aborto",
+  x = "Respuesta",
+  y = NULL 
+) + guides(fill=FALSE) + geom_text(stat='count',aes(label = paste(round((..count..)/sum(..count..)*100), "%")), vjust=-0.5, size=2.5) + 
+  theme(
+    rect = element_blank())
+```
+
+```{r Grafico religion Mujer, echo = FALSE, warning = FALSE, fig.dim = c(5,3)}
+ggplot(data_aborto2018_Woman, aes(x = abortoDummy2018, y = (..count..)/sum(..count..), fill = abortoDummy2018)) + geom_bar() + facet_wrap(~sexo+religion, labeller = labeller(sexo = sexo_labs, religion = religion_labs))+ labs(
+  title = "Justifica o No Justifica el Aborto",
+  x = "Respuesta",
+  y = NULL 
+) + guides(fill=FALSE) + geom_text(stat='count',aes(label = paste(round((..count..)/sum(..count..)*100), "%")), vjust=-0.5, size=2.5) + 
+  theme(
+    rect = element_blank())
+```
+
+(Aqui iria el analisis de los graficos, si tan solo los graficos estuvieran bien)
 
 
-
-
-
-
-
-
-
-
+(Conclusion)

@@ -72,16 +72,22 @@ data_aborto2013$abortoDummy2013 <- unlist(acumulador2013)
 
 
 #Comparación entre pensamiento del aborto del 2013 y 2018
-ggplot(data_aborto2013, aes(x = abortoDummy2013)) + geom_bar() + labs(
+ggplot(data_aborto2013, aes(x = abortoDummy2013, y = (..count..)/sum(..count..), fill = abortoDummy2013)) + geom_bar() + labs(
   title = "Justifica o No justifica el aborto en el año 2013",
   x = "Respuesta",
   y = "Cantidad" 
+  ) + guides(fill=FALSE) + geom_text(stat='count',aes(label = paste(round((..count..)/sum(..count..)*100), "%")), vjust=-0.5, size=2.5) + 
+  theme(
+    rect = element_blank()
   )
 
-ggplot(data_aborto2018, aes(x = abortoDummy2018)) + geom_bar() + labs(
+ggplot(data_aborto2018, aes(x = abortoDummy2018, y = (..count..)/sum(..count..), fill = abortoDummy2018)) + geom_bar() + labs(
   title = "Justifica o No justifica el aborto en el año 2018",
   x = "Respuesta",
   y = "Cantidad" 
+  ) + guides(fill=FALSE) + geom_text(stat='count',aes(label = paste(round((..count..)/sum(..count..)*100), "%")), vjust=-0.5, size=2.5) + 
+  theme(
+    rect = element_blank()
   )
 
 
@@ -144,9 +150,6 @@ ggplot(data_aborto2018_Man, aes(x = abortoDummy2018, y = (..count..)/sum(..count
     rect = element_blank())
 
 
-edad_intervalos_labs <- c("16 a 24 años", "25 a 34 años", "35 a 44 años", "45 a 54 años", "55 a 64 años", "mayor a 65 años")
-names(edad_intervalos_labs) <- c("1", "2", "3", "4", "5", "6")
-
 ggplot(data_aborto2018_Woman, aes(x = abortoDummy2018, y = (..count..)/sum(..count..), fill = abortoDummy2018)) + geom_bar() + facet_wrap(~sexo+edad_intervalos, labeller = labeller(sexo = sexo_labs, edad_intervalos = edad_intervalos_labs))+ labs(
   title = "Justifica o No Justifica el Aborto",
   x = "Respuesta",
@@ -169,9 +172,6 @@ ggplot(data_aborto2018_Man, aes(x = abortoDummy2018, y = (..count..)/sum(..count
   theme(
     rect = element_blank())
 
-
-religion_labs <- c("No creyente", "Catolico", "Protestante", "Ortodoxo", "Otro Cristiano", "Otro")
-names(religion_labs) <- c("0", "1", "2", "3", "8", "9")
 
 ggplot(data_aborto2018_Woman, aes(x = abortoDummy2018, y = (..count..)/sum(..count..), fill = abortoDummy2018)) + geom_bar() + facet_wrap(~sexo+religion, labeller = labeller(sexo = sexo_labs, religion = religion_labs))+ labs(
   title = "Justifica o No Justifica el Aborto",
