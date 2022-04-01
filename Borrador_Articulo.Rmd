@@ -83,8 +83,12 @@ for (i in 1:R) {
 data_aborto2013$abortoDummy2013 <- unlist(acumulador2013)
 ```
 
-En el 2020 se publicó en la misma pagina el articulo **Aborto: ¿Qué piensan los ecuatorianos?** (https://elquantificador.org/post/valores/los-ecuatorianos-aprueban-el-aborto/), donde se usaba la Encuesta Mundial de Valores o World Values Survery (WVS), especificamente la encuesta que se realizo en el 2013 en Ecuador.
-Actualmente se puede conseguir la encuesta realizada en el 2018 en el país y en este tiempo podemos observar un cambio significativo el pensamiento de los ecuatorianos sobre si el aborto es justificado o no. Antes de graficarlos, vamos a crear una nueva variable que divida las respuestas en dos: "Justifica" y "No justifica". Las respuestas entre 1, que significa que nunca justifica, a 6 seran considerados como "No justifica" el aborto, mientras que las respuestas entre 7 a 10, que significa que siempre justifica, seran consideradas como "Justifica" el aborto. Posteriormente a eso, graficamos la variable de cada año por separado. 
+El aborto ha sido un tema muy recurrente en el país en los ultimos años. El 28 de abril del 2021, la Corte Constitucional dio paso a la despenalización del aborto en casos de violación. Posteriormente, el 17 de febrero del actual año, la Asamblea Nacional aprobó ese cambio en el Codigo Organico Penal Integral (COIP), pero el 12 de marzo, el presidente Guillermo Lasso vetó parcialmente ese proyecto de ley, de esa forma el proyecto volverá a la Asamblea Nacional. Eso nos lleva a preguntarnos *¿Qué es lo que realmente piensan los ecuatorianos sobre el aborto?*, ya que algunas veces nuestra percepción a esa pregunta se ve afectado parcialmente por nuestro entorno y las redes sociales
+
+Tomando en cuenta la situación actual sobre el tema y la pregunta anteriormente mencionada, recordemos que en el 2020 se publicó en la misma pagina el articulo [Aborto: ¿Qué piensan los ecuatorianos?](https://elquantificador.org/post/valores/los-ecuatorianos-aprueban-el-aborto/), donde se usaba la Encuesta Mundial de Valores o World Values Survery (WVS), especificamente la encuesta que se realizo en el 2013 en Ecuador. Actualmente podemos encontrar la encuesta realizada en el 2018 y así podemos actualizar la respuesta a la pregunta planteada y adicionalmente podriamos realizar una mejoría al analisis de la base de datos.
+
+Para el articulo, comenzaremos realizando una comparación entre las respuestas del 2013 con las respuestas del 2018, para observar el cambio que ha ocurrido en los ecuatorianos. Adicionalmente realizaremos un analisis a las respuestas por el sexo del encuestado, un factor que no se tomó en cuenta en el anterior articulo sobre el tema, y tambien un analisis para los factores de nivel educativo, edad y religión pero manteniendo una separación de las respuesta por el sexo del encuestado. 
+
 
 ```{r Grafico del 2013, echo = FALSE, warning = FALSE, fig.dim = c(5,3)}
 ggplot(data_aborto2013, aes(x = abortoDummy2013, y = (..count..)/sum(..count..), fill = abortoDummy2013)) + geom_bar() + labs(
@@ -109,7 +113,8 @@ ggplot(data_aborto2018, aes(x = abortoDummy2018, y = (..count..)/sum(..count..),
 ```
 
 En el grafico observamos un aumento del porcentaje de las personas que justifican el aborto, siendo una diferencia de 5% entre ambos años. Los que no justifican el aborto pasaron de ser 94% a 89% en 5 años (entre el 2013 al 2018), mientras que los que justican el aborto aumentaron de 6% a 11%.
-Ahora que hemos visto que cambio ha pasado el país con respecto al pensamiento sobre el aborto, revisemos si existe un cambio con los factores, comenzando con el factor principal sobre el sexo de la persona. Además, revisaremos como afectan los otros factores, que son la edad, el nivel educativo y la religión, dividiendo a las personas por su sexo, así podemos observar como afectan esos factores a los hombres y a las mujeres.
+
+Ahora que hemos visto que cambio ha pasado el país con respecto al pensamiento sobre el aborto, revisemos si existe un cambio con los factores ya mencionados, comenzando con el factor principal sobre el sexo de la persona.
 
 ## ¿Comó afectan los factores en la justificación sobre el aborto?
 
@@ -224,4 +229,22 @@ ggplot(data_aborto2018_Woman, aes(x = abortoDummy2018, y = (..count..)/sum(..cou
 (Aqui iria el analisis de los graficos, si tan solo los graficos estuvieran bien)
 
 
-(Conclusion)
+Para facilitar los analisis, se ha eliminado las respuestas de que no conocen el tema o no tiene una postura sobre el tema, además de los que no respondieron esa pregunta.
+
+Algo que tenemos que tomar en cuenta en los analisis que se ha realizado es que utilizamos una variable creada que divide las respuestas en dos: "Justifica" y "No justifica". Originalmente, las respuestas sobre si justifican el aborto van de 1 a 10, siendo 1 que nunca justifica y 10 que siempre justifica, de esa forma divimos las respuestas: entre 1 a 6 seran considerados como "No justifica" el aborto, mientras que las respuestas entre 7 a 10 seran consideradas como "Justifica" el aborto.
+
+También, a partir de la división de las respuestas por el sexo del encuestado, separamos la base de datos en dos grupos, siendo: las respuestas de los hombres y las respuestas de las mujeres.
+
+(Conclusion general)
+
+Como la encuesta utilizada para este articulo fue realizada en el 2018 se podría esperar que no sea totalmente fiel a la actualidad de nuestro país, por esa razón después se realizara seguimiento a la pregunta que ya se ha planteado en la pagina y si alguno tiene una duda sobre los analisis realizados en el actual articulo no dude en ponerse en contacto.
+
+## Referencias
+* «ABORTO: ¿qué piensan los ecuatorianos?», 2 de noviembre de 2020. https://elquantificador.org/post/valores/los-ecuatorianos-aprueban-el-aborto/.
+* CNN. «El presidente de Ecuador veta parcialmente proyecto sobre aborto en caso de violación», 16 de marzo de 2022. https://cnnespanol.cnn.com/2022/03/16/ecuador-guillermo-lasso-veta-parcialmente-proyecto-aborto-violacion-orix/.
+* Welle (www.dw.com), Deutsche. «Ecuador despenaliza el aborto por violación | DW | 28.04.2021». DW.COM. Accedido 1 de abril de 2022. https://www.dw.com/es/ecuador-despenaliza-el-aborto-por-violaci%C3%B3n/a-57368524.
+* France 24. «Ecuador: el presidente Lasso veta parcialmente el proyecto de ley de aborto en casos de violación», 16 de marzo de 2022. https://www.france24.com/es/am%C3%A9rica-latina/20220316-ecuador-ley-aborto-lasso-femisnismo.
+* BBC News Mundo. «La Asamblea Nacional de Ecuador aprueba el aborto para casos de violación en determinados plazos». Accedido 1 de abril de 2022. https://www.bbc.com/mundo/noticias-america-latina-60424720.
+
+
+
