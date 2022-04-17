@@ -124,14 +124,10 @@ El primer factor que revisaremos, y uno que mantendremos en los siguientes facto
 sexo_labs <- c("Hombre", "Mujer")
 names(sexo_labs) <- c("1", "2")
 
-ggplot(data_aborto2018, aes(x = abortoDummy2018, y = (..count..)/sum(..count..), fill = abortoDummy2018)) + geom_bar() + facet_wrap(~sexo, labeller = labeller(sexo = sexo_labs), scales = "free") + labs(
-  title = "Justifica o No Justifica el Aborto",
-  x = "Respuesta",
-  y = NULL 
-) + guides(fill=FALSE) + geom_text(stat='count',aes(label = paste(round((..count..)/sum(..count..)*100), "%")), vjust=-0.5, size=2.5) + 
-  theme(
-    rect = element_blank(),
-  )
+prop.table(table(data_aborto2018 %>% select(abortoDummy2018, sexo)), margin = 2) %>% as.data.frame() %>% 
+  ggplot(aes(x = sexo, y = Freq, fill = abortoDummy2018)) + geom_bar(position = "stack", stat = "identity") +
+  geom_text(aes(label = paste(round(Freq * 100, 2), "%")), hjust=-0.25, size=3) + scale_x_discrete(labels = sexo_labs) + 
+  theme(rect = element_blank()) + coord_flip()
 
 ```
 
@@ -151,24 +147,19 @@ data_aborto2018_Woman <- data_aborto2018 %>%
 nivel_educativo_labs <- c("Inferior", "Medio", "Superior")
 names(nivel_educativo_labs) <- c("1", "2", "3")
 
-ggplot(data_aborto2018_Man, aes(x = abortoDummy2018, y = ..count../tapply(..count.., ..x.. ,sum)[..x..], fill = abortoDummy2018)) + geom_bar() + facet_wrap(~sexo+nivel_educativo, labeller = labeller(sexo = sexo_labs, nivel_educativo = nivel_educativo_labs), scales = "free") + labs(
-  title = "Justifica o No Justifica el Aborto",
-  x = "Respuesta",
-  y = NULL 
-) + guides(fill=FALSE) + geom_text(aes(y=..count../tapply(..count.., ..x.. ,sum)[..x..], label=scales::percent(..count../tapply(..count.., ..x.. ,sum)[..x..])), stat="count", position=position_dodge(0.9), vjust=-0.5, size=2.5) + 
-  theme(
-    rect = element_blank()
-  ) + scale_y_continuous(labels = scales::percent)
+prop.table(table(data_aborto2018_Man %>% select(abortoDummy2018, nivel_educativo)), margin = 2) %>% as.data.frame() %>% 
+  ggplot(aes(x = nivel_educativo, y = Freq, fill = abortoDummy2018)) + geom_bar(position = "stack", stat = "identity") + 
+  ggtitle("Grafico sobre los hombres")+
+  geom_text(aes(label = paste(round(Freq * 100, 2), "%")), hjust=-0.25, size=3) + scale_x_discrete(labels = nivel_educativo_labs) + 
+  theme(rect = element_blank()) + coord_flip()
 ```
 
 ```{r Grafico Nivel educativo Mujer, echo = FALSE, warning = FALSE, fig.dim = c(5,3)}
-ggplot(data_aborto2018_Woman, aes(x = abortoDummy2018, y = (..count..)/sum(..count..), fill = abortoDummy2018)) + geom_bar() + facet_wrap(~sexo+nivel_educativo, labeller = labeller(sexo = sexo_labs, nivel_educativo = nivel_educativo_labs)) + labs(
-  title = "Justifica o No Justifica el Aborto",
-  x = "Respuesta",
-  y = NULL 
-) + guides(fill=FALSE) + geom_text(stat='count',aes(label = paste(round((..count..)/sum(..count..)*100), "%")), vjust=-0.5, size=2.5) + 
-  theme(
-    rect = element_blank())
+prop.table(table(data_aborto2018_Woman %>% select(abortoDummy2018, nivel_educativo)), margin = 2) %>% as.data.frame() %>% 
+  ggplot(aes(x = nivel_educativo, y = Freq, fill = abortoDummy2018)) + geom_bar(position = "stack", stat = "identity") + 
+  ggtitle("Grafico sobre las mujeres")+
+  geom_text(aes(label = paste(round(Freq * 100, 2), "%")), hjust=-0.25, size=3) + scale_x_discrete(labels = nivel_educativo_labs) + 
+  theme(rect = element_blank()) + coord_flip()
 ```
 
 (Aqui iria el analisis de los graficos, si tan solo los graficos estuvieran bien)
@@ -179,23 +170,19 @@ El siguiente factor que se revisara son las edades de los encuestados, para este
 edad_intervalos_labs <- c("16 a 24 años", "25 a 34 años", "35 a 44 años", "45 a 54 años", "55 a 64 años", "mayor a 65 años")
 names(edad_intervalos_labs) <- c("1", "2", "3", "4", "5", "6")
 
-ggplot(data_aborto2018_Man, aes(x = abortoDummy2018, y = (..count..)/sum(..count..), fill = abortoDummy2018)) + geom_bar() + facet_wrap(~sexo+edad_intervalos, labeller = labeller(sexo = sexo_labs, edad_intervalos = edad_intervalos_labs))+ labs(
-  title = "Justifica o No Justifica el Aborto",
-  x = "Respuesta",
-  y = NULL 
-) + guides(fill=FALSE) + geom_text(stat='count',aes(label = paste(round((..count..)/sum(..count..)*100), "%")), vjust=-0.5, size=2.5) + 
-  theme(
-    rect = element_blank())
+prop.table(table(data_aborto2018_Man %>% select(abortoDummy2018, edad_intervalos)), margin = 2) %>% as.data.frame() %>% 
+  ggplot(aes(x = edad_intervalos, y = Freq, fill = abortoDummy2018)) + geom_bar(position = "stack", stat = "identity") + 
+  ggtitle("Grafico sobre los hombres")+
+  geom_text(aes(label = paste(round(Freq * 100, 2), "%")), hjust=-0.25, size=3) + scale_x_discrete(labels = edad_intervalos_labs) + 
+  theme(rect = element_blank()) + coord_flip()
 ```
 
 ```{r Grafico edades Mujer, echo = FALSE, warning = FALSE, fig.dim = c(5,3)}
-ggplot(data_aborto2018_Woman, aes(x = abortoDummy2018, y = (..count..)/sum(..count..), fill = abortoDummy2018)) + geom_bar() + facet_wrap(~sexo+edad_intervalos, labeller = labeller(sexo = sexo_labs, edad_intervalos = edad_intervalos_labs))+ labs(
-  title = "Justifica o No Justifica el Aborto",
-  x = "Respuesta",
-  y = NULL 
-) + guides(fill=FALSE) + geom_text(stat='count',aes(label = paste(round((..count..)/sum(..count..)*100), "%")), vjust=-0.5, size=2.5) + 
-  theme(
-    rect = element_blank())
+prop.table(table(data_aborto2018_Woman %>% select(abortoDummy2018, edad_intervalos)), margin = 2) %>% as.data.frame() %>% 
+  ggplot(aes(x = edad_intervalos, y = Freq, fill = abortoDummy2018)) + geom_bar(position = "stack", stat = "identity") + 
+  ggtitle("Grafico sobre las mujeres")+
+  geom_text(aes(label = paste(round(Freq * 100, 2), "%")), hjust=-0.25, size=3) + scale_x_discrete(labels = edad_intervalos_labs) + 
+  theme(rect = element_blank()) + coord_flip()
 ```
 
 
@@ -207,23 +194,20 @@ El ultimo factor que se revisara sera la religión de los encuestados, en este f
 religion_labs <- c("No creyente", "Catolico", "Protestante", "Ortodoxo", "Otro Cristiano", "Otro")
 names(religion_labs) <- c("0", "1", "2", "3", "8", "9")
 
-ggplot(data_aborto2018_Man, aes(x = abortoDummy2018, y = (..count..)/sum(..count..), fill = abortoDummy2018)) + geom_bar() + facet_wrap(~sexo+religion, labeller = labeller(sexo = sexo_labs, religion = religion_labs))+ labs(
-  title = "Justifica o No Justifica el Aborto",
-  x = "Respuesta",
-  y = NULL 
-) + guides(fill=FALSE) + geom_text(stat='count',aes(label = paste(round((..count..)/sum(..count..)*100), "%")), vjust=-0.5, size=2.5) + 
-  theme(
-    rect = element_blank())
+prop.table(table(data_aborto2018_Man %>% select(abortoDummy2018, religion)), margin = 2) %>% as.data.frame() %>% 
+  ggplot(aes(x = religion, y = Freq, fill = abortoDummy2018)) + geom_bar(position = "stack", stat = "identity") + 
+  ggtitle("Grafico sobre los hombres")+
+  geom_text(aes(label = paste(round(Freq * 100, 2), "%")), hjust=-0.25, size=3) + scale_x_discrete(labels = religion_labs) + 
+  theme(rect = element_blank()) + coord_flip()
+
 ```
 
 ```{r Grafico religion Mujer, echo = FALSE, warning = FALSE, fig.dim = c(5,3)}
-ggplot(data_aborto2018_Woman, aes(x = abortoDummy2018, y = (..count..)/sum(..count..), fill = abortoDummy2018)) + geom_bar() + facet_wrap(~sexo+religion, labeller = labeller(sexo = sexo_labs, religion = religion_labs))+ labs(
-  title = "Justifica o No Justifica el Aborto",
-  x = "Respuesta",
-  y = NULL 
-) + guides(fill=FALSE) + geom_text(stat='count',aes(label = paste(round((..count..)/sum(..count..)*100), "%")), vjust=-0.5, size=2.5) + 
-  theme(
-    rect = element_blank())
+prop.table(table(data_aborto2018_Woman %>% select(abortoDummy2018, religion)), margin = 2) %>% as.data.frame() %>% 
+  ggplot(aes(x = religion, y = Freq, fill = abortoDummy2018)) + geom_bar(position = "stack", stat = "identity") + 
+  ggtitle("Grafico sobre las mujeres")+
+  geom_text(aes(label = paste(round(Freq * 100, 2), "%")), hjust=-0.25, size=3) + scale_x_discrete(labels = religion_labs) + 
+  theme(rect = element_blank()) + coord_flip()
 ```
 
 (Aqui iria el analisis de los graficos, si tan solo los graficos estuvieran bien)
