@@ -124,14 +124,16 @@ El primer factor que revisaremos, y uno que mantendremos en los siguientes facto
 sexo_labs <- c("Hombre", "Mujer")
 names(sexo_labs) <- c("1", "2")
 
-prop.table(table(data_aborto2018 %>% select(abortoDummy2018, sexo)), margin = 2) %>% as.data.frame() %>% 
+prop.table(table(data_aborto2018 %>% select(abortoDummy2018, sexo)), margin = 2) %>% as.data.frame() %>% filter(abortoDummy2018 == "No justifica")
+
+prop.table(table(data_aborto2018 %>% select(abortoDummy2018, sexo)), margin = 2) %>% as.data.frame() %>% filter(abortoDummy2018 == "No justifica") %>% 
   ggplot(aes(x = sexo, y = Freq, fill = abortoDummy2018)) + geom_bar(position = "stack", stat = "identity") +
-  geom_text(aes(label = paste(round(Freq * 100, 2), "%")), hjust=-0.25, size=3) + scale_x_discrete(labels = sexo_labs) + 
-  theme(rect = element_blank()) + coord_flip()
+  geom_text(aes(label = paste(round(Freq * 100, 2), "%")), size=4) + scale_x_discrete(labels = sexo_labs) + 
+  theme(rect = element_blank(), legend.position = "none") + coord_flip()
 
 ```
 
-(Aqui iria el analisis del grafico, si tan solo el grafico estuviera bien)
+En el grafico, podemos observar que el 90,67% de las mujeres no justifican el aborto, mientras que de los hombres es el 86,8%. En ambos grupos la mayoria no justifica el aborto pero el mayor porcentaje que no justifican son las mujeres.
 
 
 Ahora, revisaremos el factor de nivel de educación que esta dividido en tres: Inferior, Medio y Superior. Ese factor lo analizaremos separando a la poblacion entre Hombres y Mujeres. 
@@ -147,19 +149,24 @@ data_aborto2018_Woman <- data_aborto2018 %>%
 nivel_educativo_labs <- c("Inferior", "Medio", "Superior")
 names(nivel_educativo_labs) <- c("1", "2", "3")
 
-prop.table(table(data_aborto2018_Man %>% select(abortoDummy2018, nivel_educativo)), margin = 2) %>% as.data.frame() %>% 
+prop.table(table(data_aborto2018_Man %>% select(abortoDummy2018, nivel_educativo)), margin = 2) %>% as.data.frame() %>% filter(abortoDummy2018 == "No justifica")
+
+prop.table(table(data_aborto2018_Man %>% select(abortoDummy2018, nivel_educativo)), margin = 2) %>% as.data.frame() %>% filter(abortoDummy2018 == "No justifica") %>% 
   ggplot(aes(x = nivel_educativo, y = Freq, fill = abortoDummy2018)) + geom_bar(position = "stack", stat = "identity") + 
   ggtitle("Grafico sobre los hombres")+
-  geom_text(aes(label = paste(round(Freq * 100, 2), "%")), hjust=-0.25, size=3) + scale_x_discrete(labels = nivel_educativo_labs) + 
-  theme(rect = element_blank()) + coord_flip()
+  geom_text(aes(label = paste(round(Freq * 100, 2), "%")), size=4) + scale_x_discrete(labels = nivel_educativo_labs) + 
+  theme(rect = element_blank(), legend.position = "none") + coord_flip()
 ```
 
 ```{r Grafico Nivel educativo Mujer, echo = FALSE, warning = FALSE, fig.dim = c(5,3)}
-prop.table(table(data_aborto2018_Woman %>% select(abortoDummy2018, nivel_educativo)), margin = 2) %>% as.data.frame() %>% 
+
+prop.table(table(data_aborto2018_Woman %>% select(abortoDummy2018, nivel_educativo)), margin = 2) %>% as.data.frame() %>% filter(abortoDummy2018 == "No justifica")
+
+prop.table(table(data_aborto2018_Woman %>% select(abortoDummy2018, nivel_educativo)), margin = 2) %>% as.data.frame() %>% filter(abortoDummy2018 == "No justifica") %>% 
   ggplot(aes(x = nivel_educativo, y = Freq, fill = abortoDummy2018)) + geom_bar(position = "stack", stat = "identity") + 
-  ggtitle("Grafico sobre las mujeres")+
-  geom_text(aes(label = paste(round(Freq * 100, 2), "%")), hjust=-0.25, size=3) + scale_x_discrete(labels = nivel_educativo_labs) + 
-  theme(rect = element_blank()) + coord_flip()
+  ggtitle("Grafico sobre las mujeres") +
+ geom_text(aes(label = paste(round(Freq * 100, 2), "%")), size=4) + scale_x_discrete(labels = nivel_educativo_labs) + 
+  theme(rect = element_blank(), legend.position = "none") + coord_flip()
 ```
 
 (Aqui iria el analisis de los graficos, si tan solo los graficos estuvieran bien)
@@ -170,19 +177,24 @@ El siguiente factor que se revisara son las edades de los encuestados, para este
 edad_intervalos_labs <- c("16 a 24 años", "25 a 34 años", "35 a 44 años", "45 a 54 años", "55 a 64 años", "mayor a 65 años")
 names(edad_intervalos_labs) <- c("1", "2", "3", "4", "5", "6")
 
-prop.table(table(data_aborto2018_Man %>% select(abortoDummy2018, edad_intervalos)), margin = 2) %>% as.data.frame() %>% 
+prop.table(table(data_aborto2018_Man %>% select(abortoDummy2018, edad_intervalos)), margin = 2) %>% as.data.frame() %>% filter(abortoDummy2018 == "No justifica")
+
+prop.table(table(data_aborto2018_Man %>% select(abortoDummy2018, edad_intervalos)), margin = 2) %>% as.data.frame() %>% filter(abortoDummy2018 == "No justifica") %>% 
   ggplot(aes(x = edad_intervalos, y = Freq, fill = abortoDummy2018)) + geom_bar(position = "stack", stat = "identity") + 
-  ggtitle("Grafico sobre los hombres")+
-  geom_text(aes(label = paste(round(Freq * 100, 2), "%")), hjust=-0.25, size=3) + scale_x_discrete(labels = edad_intervalos_labs) + 
-  theme(rect = element_blank()) + coord_flip()
+  ggtitle("Grafico sobre los hombres") +
+ geom_text(aes(label = paste(round(Freq * 100, 2), "%")), size=4) + scale_x_discrete(labels = edad_intervalos_labs) + 
+  theme(rect = element_blank(), legend.position = "none") + coord_flip()
 ```
 
 ```{r Grafico edades Mujer, echo = FALSE, warning = FALSE, fig.dim = c(5,3)}
-prop.table(table(data_aborto2018_Woman %>% select(abortoDummy2018, edad_intervalos)), margin = 2) %>% as.data.frame() %>% 
+
+prop.table(table(data_aborto2018_Woman %>% select(abortoDummy2018, edad_intervalos)), margin = 2) %>% as.data.frame() %>% filter(abortoDummy2018 == "No justifica")
+
+prop.table(table(data_aborto2018_Woman %>% select(abortoDummy2018, edad_intervalos)), margin = 2) %>% as.data.frame() %>% filter(abortoDummy2018 == "No justifica") %>% 
   ggplot(aes(x = edad_intervalos, y = Freq, fill = abortoDummy2018)) + geom_bar(position = "stack", stat = "identity") + 
-  ggtitle("Grafico sobre las mujeres")+
-  geom_text(aes(label = paste(round(Freq * 100, 2), "%")), hjust=-0.25, size=3) + scale_x_discrete(labels = edad_intervalos_labs) + 
-  theme(rect = element_blank()) + coord_flip()
+  ggtitle("Grafico sobre las mujeres") +
+   geom_text(aes(label = paste(round(Freq * 100, 2), "%")), size=4) + scale_x_discrete(labels = edad_intervalos_labs) + 
+  theme(rect = element_blank(), legend.position = "none") + coord_flip()
 ```
 
 
@@ -194,20 +206,25 @@ El ultimo factor que se revisara sera la religión de los encuestados, en este f
 religion_labs <- c("No creyente", "Catolico", "Protestante", "Ortodoxo", "Otro Cristiano", "Otro")
 names(religion_labs) <- c("0", "1", "2", "3", "8", "9")
 
-prop.table(table(data_aborto2018_Man %>% select(abortoDummy2018, religion)), margin = 2) %>% as.data.frame() %>% 
+prop.table(table(data_aborto2018_Man %>% select(abortoDummy2018, religion)), margin = 2) %>% as.data.frame() %>% filter(abortoDummy2018 == "No justifica")
+
+prop.table(table(data_aborto2018_Man %>% select(abortoDummy2018, religion)), margin = 2) %>% as.data.frame() %>% filter(abortoDummy2018 == "No justifica") %>% 
   ggplot(aes(x = religion, y = Freq, fill = abortoDummy2018)) + geom_bar(position = "stack", stat = "identity") + 
   ggtitle("Grafico sobre los hombres")+
-  geom_text(aes(label = paste(round(Freq * 100, 2), "%")), hjust=-0.25, size=3) + scale_x_discrete(labels = religion_labs) + 
-  theme(rect = element_blank()) + coord_flip()
+  geom_text(aes(label = paste(round(Freq * 100, 2), "%")), size=4) + scale_x_discrete(labels = religion_labs) + 
+  theme(rect = element_blank(), legend.position = "none") + coord_flip()
 
 ```
 
 ```{r Grafico religion Mujer, echo = FALSE, warning = FALSE, fig.dim = c(5,3)}
-prop.table(table(data_aborto2018_Woman %>% select(abortoDummy2018, religion)), margin = 2) %>% as.data.frame() %>% 
+
+prop.table(table(data_aborto2018_Woman %>% select(abortoDummy2018, religion)), margin = 2) %>% as.data.frame() %>% filter(abortoDummy2018 == "No justifica")
+
+prop.table(table(data_aborto2018_Woman %>% select(abortoDummy2018, religion)), margin = 2) %>% as.data.frame() %>% filter(abortoDummy2018 == "No justifica") %>% 
   ggplot(aes(x = religion, y = Freq, fill = abortoDummy2018)) + geom_bar(position = "stack", stat = "identity") + 
   ggtitle("Grafico sobre las mujeres")+
-  geom_text(aes(label = paste(round(Freq * 100, 2), "%")), hjust=-0.25, size=3) + scale_x_discrete(labels = religion_labs) + 
-  theme(rect = element_blank()) + coord_flip()
+   geom_text(aes(label = paste(round(Freq * 100, 2), "%")), size=4) + scale_x_discrete(labels = religion_labs) + 
+  theme(rect = element_blank(), legend.position = "none") + coord_flip()
 ```
 
 (Aqui iria el analisis de los graficos, si tan solo los graficos estuvieran bien)
