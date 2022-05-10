@@ -169,7 +169,8 @@ prop.table(table(data_aborto2018_Woman %>% select(abortoDummy2018, nivel_educati
   theme(rect = element_blank(), legend.position = "none") + coord_flip()
 ```
 
-(Aqui iria el analisis de los graficos, si tan solo los graficos estuvieran bien)
+En el grafico comparativo entre el nivel educativo de los hombres no hay un diferencia significativa excepto por el nivel inferior de eduación, siendo este el que presenta el mayor porcentaje que no justifica el aborto. Mientras que en el grafico comparatio entre el nivel educativo de las mujeres no hay diferencia significativa en el porcentaje. Con eso podemos decir que el nivel educativo no es un factor decisivo con la diferencia de que si justifican o no el aborto.
+
 
 El siguiente factor que se revisara son las edades de los encuestados, para este factor vamos a dividirlos en 6 grupos: de 16 a 24 años, de 25 a 34 años, de 35 a 44 años, de 45 a 54 años, de 55 a 64 años y mayores a 65 años. Al igual que el nivel educativo, vamos a mantener separado a las personas en Hombres y Mujeres.
 
@@ -197,8 +198,9 @@ prop.table(table(data_aborto2018_Woman %>% select(abortoDummy2018, edad_interval
   theme(rect = element_blank(), legend.position = "none") + coord_flip()
 ```
 
+El grafico comparativo dividido por las edades de los hombres nos muestra una variación algo significativa entre los grupos, siendo el menor porcentaje de los que no justifican el aborto el grupo de 45 a 54 años de edad con 82.19% y el mayor porcentaje de los que no justifican son el grupo de hombres mayores a 65 años con 93.02%, los demas grupos tienen porcentajes similares aunque igual se nota una diferencia entre ellos. En el grafico comparativo dividido por las edades de las mujeres podemos observar que no hay una variación significativa, excepto por el grupo de 25 a 34 años que es el menor porcentaje con 87.73%, mientras que los demas grupos se mantienen con un porcentaje mayor a 90%. Con eso podemos diferir que es probable que las edades si sea un factor que tomar en cuenta sobre si justifican o no el aborto.
 
-(Aqui iria el analisis de los graficos, si tan solo los graficos estuvieran bien)
+
 
 El ultimo factor que se revisara sera la religión de los encuestados, en este factor vamos a tener dividido las religiones que existen el país o que son mayoría, tendremos 6 categorías: No creyente, Catolico, Protestante, Ortodoxo, Otros Cristianos y Otros. Y al igual que los anteriores, mantendremos la division de Hombres y Mujeres.
 
@@ -227,8 +229,7 @@ prop.table(table(data_aborto2018_Woman %>% select(abortoDummy2018, religion)), m
   theme(rect = element_blank(), legend.position = "none") + coord_flip()
 ```
 
-(Aqui iria el analisis de los graficos, si tan solo los graficos estuvieran bien)
-
+En el grafico dividido por religión de los hombres, podemos observar una mayor diferencia en dos grupos: el grupo de otras religiones se mantiene con el menor porcentaje que no justifican el aborto con 60%, mientras que el grupo de los protestantes se mantiene un 100% que no justifican el aborto, además podemos observar que los demás grupos (otros cristianos, catolicos y no creyentes) tienen porcentajes similares que se mantienen entre el 80% a 90%. En el grafico dividido por religión de las mujeres, podemos observar que los grupos de otras religiones, ortodoxo y protestantes tienen un 100% que no justifican el aborto, mientas que los otros grupos (otras cristianas, catolicas y no creyentes) tienen porcentajes similares que no justifican el aborto, siendo el menor porcentaje el grupo de catolicas. Con eso podemos observar que la religión se puede considerar como un factor importante sobre si justifican o no justican el aborto, principalmente en la diferencia de como afecta a los hombres y a las mujeres.
 
 Para facilitar los analisis, se ha eliminado las respuestas de que no conocen el tema o no tiene una postura sobre el tema, además de los que no respondieron esa pregunta.
 
@@ -236,7 +237,8 @@ Algo que tenemos que tomar en cuenta en los analisis que se ha realizado es que 
 
 También, a partir de la división de las respuestas por el sexo del encuestado, separamos la base de datos en dos grupos, siendo: las respuestas de los hombres y las respuestas de las mujeres.
 
-(Conclusion general)
+De todos los factores estudiados podemos concluir que el nivel educativo no tiene significancia en el tema, las edades pueden ser consideradas un factor importante al igual que la religión pero también tomando en cuenta la diferencia entre hombres y mujeres sobre como le afectan los factores. 
+El pensamiento ecuatoriano sobre el aborto ha ido cambiando con el tiempo, eso lo podemos observar en la historia del país y en el actual articulo con el grafico comparativo entre el 2013 y el 2018, pero la epoca no es lo unico que puede variar el pensamiento sino tambien otros factores en nuestras vidas.
 
 Como la encuesta utilizada para este articulo fue realizada en el 2018 se podría esperar que no sea totalmente fiel a la actualidad de nuestro país, por esa razón después se realizara seguimiento a la pregunta que ya se ha planteado en la pagina y si alguno tiene una duda sobre los analisis realizados en el actual articulo no dude en ponerse en contacto.
 
