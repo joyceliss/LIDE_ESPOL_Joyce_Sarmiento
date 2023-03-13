@@ -1,5 +1,7 @@
 ---
-title: "Articulo LIDE sobre el Aborto"
+title: "Revisitando el aborto: ¿qué piensan los ecuatorianos?"
+author: "Joyce Sarmiento"
+date: "Marzo 2023"
 output:
   html_document:
     df_print: paged
@@ -9,9 +11,7 @@ output:
 if(!require(tidyverse)) install.packages("tidyverse", repos = "http://cran.us.r-project.org")
 if(!require(readxl)) install.packages("readxl", repos = "http://cran.us.r-project.org")
 if(!require(ggplot2)) install.packages("ggplot2", repos = "http://cran.us.r-project.org")
-library(tidyverse)
-library(ggplot2)
-library(readxl)
+if(!require(patchwork)) install.packages("patchwork", repos = "http://cran.us.r-project.org")
 ```
 
 ```{r Descargar Bases de datos, include = FALSE}
@@ -83,60 +83,114 @@ for (i in 1:R) {
 data_aborto2013$abortoDummy2013 <- unlist(acumulador2013)
 ```
 
-El aborto ha sido un tema muy recurrente en el país en los ultimos años. El 28 de abril del 2021, la Corte Constitucional dio paso a la despenalización del aborto en casos de violación. Posteriormente, el 17 de febrero del actual año, la Asamblea Nacional aprobó ese cambio en el Codigo Organico Penal Integral (COIP), pero el 12 de marzo, el presidente Guillermo Lasso vetó parcialmente ese proyecto de ley, de esa forma el proyecto volverá a la Asamblea Nacional. Eso nos lleva a preguntarnos *¿Qué es lo que realmente piensan los ecuatorianos sobre el aborto?*, ya que algunas veces nuestra percepción a esa pregunta se ve afectado parcialmente por nuestro entorno y las redes sociales
+El aborto ha sido un tema muy recurrente en el país en los ultimos años. El 28 de abril del 202 se vivió un hito en la región cuando la Corte Constitucional del Ecuador dio paso a la despenalización del aborto en casos de violación. Posteriormente, el 17 de febrero del actual año, la Asamblea Nacional aprobó ese cambio en el Codigo Orgánico Penal Integral (COIP), pero el 12 de marzo, el presidente Guillermo Lasso vetó parcialmente ese proyecto de ley y se constituyó una version limitada pero de todas formas más exhaustiva del aborto legal por violación en el país. El proceso de despenalización que comenzó en abril 2021 despertó muchos ánimos, por lo que es clave preguntarse una vez más más de dos años después que El Quantificador analizó esta situación, *¿qué es lo que realmente piensan los ecuatorianos sobre el aborto?*
 
-Tomando en cuenta la situación actual sobre el tema y la pregunta anteriormente mencionada, recordemos que en el 2020 se publicó en la misma pagina el articulo [Aborto: ¿Qué piensan los ecuatorianos?](https://elquantificador.org/post/valores/los-ecuatorianos-aprueban-el-aborto/), donde se usaba la Encuesta Mundial de Valores o World Values Survery (WVS), especificamente la encuesta que se realizo en el 2013 en Ecuador. Actualmente podemos encontrar la encuesta realizada en el 2018 y así podemos actualizar la respuesta a la pregunta planteada y adicionalmente podriamos realizar una mejoría al analisis de la base de datos.
+Tomando en cuenta la situación actual, recordemos que en el 2020 El Quantificador ya exploró estos temas en otro [artículo](https://elquantificador.org/post/valores/los-ecuatorianos-aprueban-el-aborto/), donde se utilizó la Encuesta Mundial de Valores o World Values Survey (WVS), específicamente la encuesta que se realizo en el 2013 en Ecuador. Actualmente podemos encontrar la encuesta realizada en 2018 y así podemos actualizar la respuesta a la pregunta planteada y adicionalmente se puede aumentar la rigurosidad del análisis con la nueva ronda de la encuesta.
 
-Para el articulo, comenzaremos realizando una comparación entre las respuestas del 2013 con las respuestas del 2018, para observar el cambio que ha ocurrido en los ecuatorianos. Adicionalmente realizaremos un analisis a las respuestas por el sexo del encuestado, un factor que no se tomó en cuenta en el anterior articulo sobre el tema, y tambien un analisis para los factores de nivel educativo, edad y religión pero manteniendo una separación de las respuesta por el sexo del encuestado. 
+Comenzaremos realizando una comparación entre las respuestas del 2013 con las respuestas del 2018, para observar el cambio ocurrido. Adicionalmente realizaremos un analisis a las respuestas por el sexo del encuestado, un factor que no se tomó en cuenta en el anterior artículo y tambien un análisis para los factores de nivel educativo, edad y religión, manteniendo la desagregación a nivel de sexo. 
 
+Para facilitar los análisis, se ha eliminado las respuestas de que no conocen el tema o no tiene una postura sobre el tema, además de los que no respondieron esa pregunta. Además, los análisis que se han realizado lo hacen con una variable generada aquí, que divide las respuestas en "Justifica" y "No justifica". Originalmente, las respuestas van del de 1 a 10, siendo 1 que nunca justifica y 10 que siempre justifica. En el presente análisis, entre 1 al 6 seran considerados como "No justifica" el aborto, mientras que las respuestas entre 7 a 10 seran consideradas como "Justifica".
 
-```{r Grafico del 2013, echo = FALSE, warning = FALSE, fig.dim = c(5,3)}
-ggplot(data_aborto2013, aes(x = abortoDummy2013, y = (..count..)/sum(..count..), fill = abortoDummy2013)) + geom_bar() + labs(
-  title = "Justifica o No justifica el aborto en el año 2013",
-  x = "Respuesta",
-  y = "Cantidad" 
-  ) + guides(fill=FALSE) + geom_text(stat='count',aes(label = paste(round((..count..)/sum(..count..)*100), "%")), vjust=-0.5, size=2.5) + 
-  theme(
-    rect = element_blank()
-  )
+```{r Graficos, echo = FALSE, warning = FALSE, fig.dim = c(5,3), fig.align='center'}
+
+# 2013
+
+grafico_2013 <-
+  data_aborto2013 %>% 
+  ggplot(aes(x = abortoDummy2013, 
+             y = (..count..)/sum(..count..), 
+             fill = abortoDummy2013)) + 
+    geom_bar() + 
+    labs(
+    caption = "Año 2013",
+    x = "Respuesta"
+    ) + 
+    guides(fill = FALSE) + 
+    geom_text(stat='count',
+              aes(label = paste(round((..count..)/sum(..count..)*100), "%")),
+              vjust=-0.5, size=2.5) + 
+  theme_bw()+
+  theme(axis.ticks.x = element_blank(),
+        axis.ticks.y = element_blank(),
+        axis.title = element_blank(),
+        axis.text.y = element_blank(),
+        panel.grid = element_blank(),
+        plot.title = element_text(size = 10),
+        plot.caption = element_text(hjust = 0.5))
+
+# 2018
+
+grafico_2018 <-
+  ggplot(data_aborto2018, aes(x = abortoDummy2018, y = (..count..)/sum(..count..), fill = abortoDummy2018)) + geom_bar() + 
+  labs(
+    caption= "Año 2018",
+    x = "Respuesta"
+    ) + guides(fill=FALSE) + geom_text(stat='count',aes(label = paste(round((..count..)/sum(..count..)*100), "%")), vjust=-0.5, size=2.5) +
+  theme_bw()+
+  theme(axis.ticks.x = element_blank(),
+        axis.ticks.y = element_blank(),
+        axis.title = element_blank(),
+        axis.text.y = element_blank(),
+        panel.grid = element_blank(),
+        plot.title = element_text(size = 10),
+        plot.caption = element_text(hjust = 0.5))
+
+grafico_2013 + grafico_2018 +
+  plot_layout(ncol = 2) +
+  plot_annotation(title = 'Justificación del Aborto en Ecuador',
+                  subtitle = 'Datos de la WVS',
+                  caption = 'Encuesta Mundial de Valores, rondas 2013 y 2018 en Ecuador.')
 ```
 
-```{r Grafico del 2018, echo = FALSE, warning = FALSE, fig.dim = c(5,3)}
-ggplot(data_aborto2018, aes(x = abortoDummy2018, y = (..count..)/sum(..count..), fill = abortoDummy2018)) + geom_bar() + labs(
-  title = "Justifica o No justifica el aborto en el año 2018",
-  x = "Respuesta",
-  y = "Cantidad" 
-  ) + guides(fill=FALSE) + geom_text(stat='count',aes(label = paste(round((..count..)/sum(..count..)*100), "%")), vjust=-0.5, size=2.5) + 
-  theme(
-    rect = element_blank()
-  )
-```
+En el gráfico observamos un aumento del porcentaje de las personas que justifican el aborto, siendo una diferencia de 5% entre ambos años. Los que no justifican el aborto pasaron de ser 94% a 89% en 5 años (entre el 2013 al 2018), mientras que los que justican el aborto aumentaron de 6% a 11%. El aumento existe, pero es casi neglible: sería erróneo creer que la decisión de la corte constitucional responde a menor tabú sobre este tema en la población. 
 
-En el grafico observamos un aumento del porcentaje de las personas que justifican el aborto, siendo una diferencia de 5% entre ambos años. Los que no justifican el aborto pasaron de ser 94% a 89% en 5 años (entre el 2013 al 2018), mientras que los que justican el aborto aumentaron de 6% a 11%.
+Ahora que hemos visto que cambio ha pasado el país con respecto al pensamiento sobre el aborto, revisemos si existe un cambio con los factores ya mencionados, comenzando con el factor principal sobre el sexo de la persona. El análisis se lo realiza con respecto al año 2018. 
 
-Ahora que hemos visto que cambio ha pasado el país con respecto al pensamiento sobre el aborto, revisemos si existe un cambio con los factores ya mencionados, comenzando con el factor principal sobre el sexo de la persona.
+## Factores que afectan la justificación al aborto
 
-## ¿Comó afectan los factores en la justificación sobre el aborto?
+El primer factor que revisaremos y uno que mantendremos como desagregación en el análisis de otros factores de importancia es el sexo del encuestado. Dividimos la población entre hombres y mujeres y revisaremos que contestaron en la pregunta anteriormente mencionada sobre justificación al aborto. 
 
-El primer factor que revisaremos, y uno que mantendremos en los siguientes factores, es el sexo de la persona. Dividimos la población entre hombres y mujeres y revisaremos que contestaron sobre el aborto y si lo justifican o no.
+```{r Comparacion entre hombres y mujeres, echo = FALSE, warning = FALSE, message = false, fig.dim = c(5,3)}
 
-```{r Comparacion entre hombres y mujeres, echo = FALSE, warning = FALSE, fig.dim = c(5,3)}
 sexo_labs <- c("Hombre", "Mujer")
+
 names(sexo_labs) <- c("1", "2")
 
-prop.table(table(data_aborto2018 %>% select(abortoDummy2018, sexo)), margin = 2) %>% as.data.frame() %>% filter(abortoDummy2018 == "No justifica")
+# prop.table(table(data_aborto2018 %>% 
+#                  select(abortoDummy2018, sexo)), 
+#            margin = 2) %>% 
+#   as.data.frame() %>% 
+#   filter(abortoDummy2018 == "No justifica")
 
-prop.table(table(data_aborto2018 %>% select(abortoDummy2018, sexo)), margin = 2) %>% as.data.frame() %>% filter(abortoDummy2018 == "No justifica") %>% 
-  ggplot(aes(x = sexo, y = Freq, fill = abortoDummy2018)) + geom_bar(position = "stack", stat = "identity") +
-  geom_text(aes(label = paste(round(Freq * 100, 2), "%")), size=4) + scale_x_discrete(labels = sexo_labs) + 
-  theme(rect = element_blank(), legend.position = "none") + coord_flip()
+prop.table(table(data_aborto2018 %>% select(abortoDummy2018, sexo)), margin = 2) %>% 
+  as.data.frame() %>% 
+  filter(abortoDummy2018 == "No justifica") %>% 
+  ggplot(aes(x = sexo, y = Freq, fill = abortoDummy2018)) + 
+  geom_bar(position = "stack", stat = "identity") +
+  coord_flip() +
+  geom_text(aes(label = paste(round(Freq * 100, 2), "%")), 
+            size = 4,
+            hjust = 2) + 
+  scale_x_discrete(labels = sexo_labs) + 
+  theme_bw() + 
+  theme(axis.ticks.x = element_blank(),
+        axis.ticks.y = element_blank(),
+        axis.text.x = element_blank(),
+        panel.grid = element_blank(),
+        plot.caption = element_text(hjust = 0.5),
+        legend.position = 'none') + 
+  labs(
+    x = 'Sexo',
+    y = '% de la población',
+    title = 'Justificación del aborto por sexo del encuestado',
+    subtitle = 'Encuestra Mundial de Valores 2018'
+  ) 
 
 ```
 
-En el grafico, podemos observar que el 90,67% de las mujeres no justifican el aborto, mientras que de los hombres es el 86,8%. En ambos grupos la mayoria no justifica el aborto pero el mayor porcentaje que no justifican son las mujeres.
+En el gráfico, podemos observar que el 90,67% de las mujeres no justifican el aborto, mientras que de los hombres es el 86,8%. En ambos grupos la mayoria no justifica el aborto, sin embargo, en este caso las mujeres marginalmente lo desaprueban más.
 
-
-Ahora, revisaremos el factor de nivel de educación que esta dividido en tres: Inferior, Medio y Superior. Ese factor lo analizaremos separando a la poblacion entre Hombres y Mujeres. 
+Ahora, revisaremos el factor de nivel de educación que esta dividido en tres: Inferior, Medio y Superior. Ese factor lo analizaremos separando a la poblacion entre hombres y mujeres. 
 
 ```{r Filtro entre Hombres y Mujeres, include = FALSE}
 data_aborto2018_Man <- data_aborto2018 %>%
@@ -149,100 +203,177 @@ data_aborto2018_Woman <- data_aborto2018 %>%
 nivel_educativo_labs <- c("Inferior", "Medio", "Superior")
 names(nivel_educativo_labs) <- c("1", "2", "3")
 
-prop.table(table(data_aborto2018_Man %>% select(abortoDummy2018, nivel_educativo)), margin = 2) %>% as.data.frame() %>% filter(abortoDummy2018 == "No justifica")
+# prop.table(table(data_aborto2018_Man %>% select(abortoDummy2018, nivel_educativo)), margin = 2) %>% as.data.frame() %>% filter(abortoDummy2018 == "No justifica")
 
-prop.table(table(data_aborto2018_Man %>% select(abortoDummy2018, nivel_educativo)), margin = 2) %>% as.data.frame() %>% filter(abortoDummy2018 == "No justifica") %>% 
-  ggplot(aes(x = nivel_educativo, y = Freq, fill = abortoDummy2018)) + geom_bar(position = "stack", stat = "identity") + 
-  ggtitle("Grafico sobre los hombres")+
-  geom_text(aes(label = paste(round(Freq * 100, 2), "%")), size=4) + scale_x_discrete(labels = nivel_educativo_labs) + 
-  theme(rect = element_blank(), legend.position = "none") + coord_flip()
+  prop.table(table(data_aborto2018_Man %>% select(abortoDummy2018, nivel_educativo)), margin = 2) %>%
+    as.data.frame() %>% 
+    filter(abortoDummy2018 == "No justifica") %>% 
+    ggplot(aes(x = nivel_educativo, y = Freq, fill = abortoDummy2018)) + 
+    geom_bar(position = "stack", stat = "identity") + 
+    geom_text(aes(label = paste(round(Freq * 100, 2), "%")), 
+              size = 4,
+              hjust = 2) + 
+    scale_x_discrete(labels = nivel_educativo_labs) + 
+    theme_bw() + 
+    theme(axis.ticks.x = element_blank(),
+          axis.ticks.y = element_blank(),
+          axis.text.x = element_blank(),
+          panel.grid = element_blank(),
+          plot.caption = element_text(hjust = 0.5),
+          legend.position = 'none') + 
+    labs(title = 'No justificación del aborto por nivel educativo',
+     subtitle = 'Para encuestados hombres',
+     x = 'Nivel educativo', 
+     y = '% del Total') +
+    coord_flip()
 ```
 
 ```{r Grafico Nivel educativo Mujer, echo = FALSE, warning = FALSE, fig.dim = c(5,3)}
 
-prop.table(table(data_aborto2018_Woman %>% select(abortoDummy2018, nivel_educativo)), margin = 2) %>% as.data.frame() %>% filter(abortoDummy2018 == "No justifica")
+# prop.table(table(data_aborto2018_Woman %>% select(abortoDummy2018, nivel_educativo)), margin = 2) %>% as.data.frame() %>% filter(abortoDummy2018 == "No justifica")
 
-prop.table(table(data_aborto2018_Woman %>% select(abortoDummy2018, nivel_educativo)), margin = 2) %>% as.data.frame() %>% filter(abortoDummy2018 == "No justifica") %>% 
-  ggplot(aes(x = nivel_educativo, y = Freq, fill = abortoDummy2018)) + geom_bar(position = "stack", stat = "identity") + 
-  ggtitle("Grafico sobre las mujeres") +
- geom_text(aes(label = paste(round(Freq * 100, 2), "%")), size=4) + scale_x_discrete(labels = nivel_educativo_labs) + 
-  theme(rect = element_blank(), legend.position = "none") + coord_flip()
+prop.table(table(data_aborto2018_Woman %>% select(abortoDummy2018, nivel_educativo)), margin = 2) %>%
+  as.data.frame() %>% 
+  filter(abortoDummy2018 == "No justifica") %>% 
+  ggplot(aes(x = nivel_educativo, y = Freq, fill = abortoDummy2018)) + 
+  geom_bar(position = "stack", stat = "identity") + 
+  labs(title = 'No justificación del aborto por nivel educativo',
+       subtitle = 'Para encuestadas mujeres',
+       x = 'Nivel educativo', 
+       y = '% del Total') +
+  geom_text(aes(label = paste(round(Freq * 100, 2), "%")), 
+            size = 4,
+            hjust = 2) + 
+  scale_x_discrete(labels = nivel_educativo_labs) + 
+  theme_bw() + 
+  theme(axis.ticks.x = element_blank(),
+          axis.ticks.y = element_blank(),
+          axis.text.x = element_blank(),
+          panel.grid = element_blank(),
+          plot.caption = element_text(hjust = 0.5),
+          legend.position = 'none') + 
+  coord_flip()
 ```
 
-En el grafico comparativo entre el nivel educativo de los hombres no hay un diferencia significativa excepto por el nivel inferior de eduación, siendo este el que presenta el mayor porcentaje que no justifica el aborto. Mientras que en el grafico comparatio entre el nivel educativo de las mujeres no hay diferencia significativa en el porcentaje. Con eso podemos decir que el nivel educativo no es un factor decisivo con la diferencia de que si justifican o no el aborto.
+En el grafico comparativo entre el nivel educativo de los hombres no hay una diferencia significativa excepto por el nivel inferior de eduación, siendo este el que presenta el mayor porcentaje que no justifica el aborto. Por otro lado, el gráfico para encuestadas mujeres no presenta ninguna diferencia significativa en el porcentaj de justificación del aborto. Con esto, podemos decir que el nivel educativo no es un factor decisivo en la justificación del aborto.
 
-
-El siguiente factor que se revisara son las edades de los encuestados, para este factor vamos a dividirlos en 6 grupos: de 16 a 24 años, de 25 a 34 años, de 35 a 44 años, de 45 a 54 años, de 55 a 64 años y mayores a 65 años. Al igual que el nivel educativo, vamos a mantener separado a las personas en Hombres y Mujeres.
+A continuación se revisa la edad de los encuestados, dividiendo en 6 grupos: de 16 a 24 años, de 25 a 34 años, de 35 a 44 años, de 45 a 54 años, de 55 a 64 años y mayores a 65 años. Se desagrega por sexo del encuestado, al igual que en los gráficos anteriores.
 
 ```{r Grafico edades Hombre, echo = FALSE, warning = FALSE, fig.dim = c(5,3)}
-edad_intervalos_labs <- c("16 a 24 años", "25 a 34 años", "35 a 44 años", "45 a 54 años", "55 a 64 años", "mayor a 65 años")
-names(edad_intervalos_labs) <- c("1", "2", "3", "4", "5", "6")
+edad_intervalos_labs <- 
+  c("16 a 24 años", "25 a 34 años", "35 a 44 años", "45 a 54 años", "55 a 64 años", "Mayor a 65 años")
+names(edad_intervalos_labs) <- 
+  c("1", "2", "3", "4", "5", "6")
 
-prop.table(table(data_aborto2018_Man %>% select(abortoDummy2018, edad_intervalos)), margin = 2) %>% as.data.frame() %>% filter(abortoDummy2018 == "No justifica")
+# prop.table(table(data_aborto2018_Man %>% select(abortoDummy2018, edad_intervalos)), margin = 2) %>% as.data.frame() %>% filter(abortoDummy2018 == "No justifica")
 
-prop.table(table(data_aborto2018_Man %>% select(abortoDummy2018, edad_intervalos)), margin = 2) %>% as.data.frame() %>% filter(abortoDummy2018 == "No justifica") %>% 
-  ggplot(aes(x = edad_intervalos, y = Freq, fill = abortoDummy2018)) + geom_bar(position = "stack", stat = "identity") + 
-  ggtitle("Grafico sobre los hombres") +
- geom_text(aes(label = paste(round(Freq * 100, 2), "%")), size=4) + scale_x_discrete(labels = edad_intervalos_labs) + 
-  theme(rect = element_blank(), legend.position = "none") + coord_flip()
+prop.table(table(data_aborto2018_Man %>% select(abortoDummy2018, edad_intervalos)), margin = 2) %>%
+  as.data.frame() %>% 
+  filter(abortoDummy2018 == "No justifica") %>% 
+  ggplot(aes(x = edad_intervalos, y = Freq, fill = abortoDummy2018)) + 
+  geom_bar(position = "stack", stat = "identity") + 
+  labs(title = 'No justificación del aborto por edad del encuestado',
+       subtitle = 'Para encuestados hombres',
+       x = 'Grupo etario', 
+       y = '% del total') +
+  geom_text(aes(label = paste(round(Freq * 100, 2), "%")), 
+            size = 4,
+            hjust = 2) + 
+  scale_x_discrete(labels = edad_intervalos_labs) +
+  theme_bw() + 
+  theme(legend.position = "none",
+        panel.grid = element_blank(),
+        axis.ticks.x = element_blank(),
+        axis.text.x = element_blank()) + 
+  coord_flip()
 ```
 
 ```{r Grafico edades Mujer, echo = FALSE, warning = FALSE, fig.dim = c(5,3)}
 
-prop.table(table(data_aborto2018_Woman %>% select(abortoDummy2018, edad_intervalos)), margin = 2) %>% as.data.frame() %>% filter(abortoDummy2018 == "No justifica")
+# prop.table(table(data_aborto2018_Woman %>% select(abortoDummy2018, edad_intervalos)), margin = 2) %>% as.data.frame() %>% filter(abortoDummy2018 == "No justifica")
 
-prop.table(table(data_aborto2018_Woman %>% select(abortoDummy2018, edad_intervalos)), margin = 2) %>% as.data.frame() %>% filter(abortoDummy2018 == "No justifica") %>% 
-  ggplot(aes(x = edad_intervalos, y = Freq, fill = abortoDummy2018)) + geom_bar(position = "stack", stat = "identity") + 
-  ggtitle("Grafico sobre las mujeres") +
-   geom_text(aes(label = paste(round(Freq * 100, 2), "%")), size=4) + scale_x_discrete(labels = edad_intervalos_labs) + 
-  theme(rect = element_blank(), legend.position = "none") + coord_flip()
+prop.table(table(data_aborto2018_Woman %>% select(abortoDummy2018, edad_intervalos)), margin = 2) %>%
+  as.data.frame() %>% 
+  filter(abortoDummy2018 == "No justifica") %>% 
+  ggplot(aes(x = edad_intervalos, y = Freq, fill = abortoDummy2018)) + 
+  geom_bar(position = "stack", stat = "identity") +
+  labs(title = 'No justificación del aborto por edad del encuestado',
+       subtitle = 'Para encuestadas mujeres',
+       x = 'Grupo etario', 
+       y = '% del total') +
+  geom_text(aes(label = paste(round(Freq * 100, 2), "%")), size=4) + 
+  scale_x_discrete(labels = edad_intervalos_labs) + 
+  theme_bw() + 
+  theme(legend.position = "none",
+        panel.grid = element_blank(),
+        axis.ticks.x = element_blank(),
+        axis.text.x = element_blank()) + 
+  coord_flip()
 ```
 
-El grafico comparativo dividido por las edades de los hombres nos muestra una variación algo significativa entre los grupos, siendo el menor porcentaje de los que no justifican el aborto el grupo de 45 a 54 años de edad con 82.19% y el mayor porcentaje de los que no justifican son el grupo de hombres mayores a 65 años con 93.02%, los demas grupos tienen porcentajes similares aunque igual se nota una diferencia entre ellos. En el grafico comparativo dividido por las edades de las mujeres podemos observar que no hay una variación significativa, excepto por el grupo de 25 a 34 años que es el menor porcentaje con 87.73%, mientras que los demas grupos se mantienen con un porcentaje mayor a 90%. Con eso podemos diferir que es probable que las edades si sea un factor que tomar en cuenta sobre si justifican o no el aborto.
-
-
-
-El ultimo factor que se revisara sera la religión de los encuestados, en este factor vamos a tener dividido las religiones que existen el país o que son mayoría, tendremos 6 categorías: No creyente, Catolico, Protestante, Ortodoxo, Otros Cristianos y Otros. Y al igual que los anteriores, mantendremos la division de Hombres y Mujeres.
+El gráfico comparativo dividido por grupo etario en el caso de hombres nos muestra una variación algo significativa entre los grupos, siendo el menor porcentaje de los que no justifican el aborto el grupo de 45 a 54 años de edad con 82.19% y el mayor porcentaje de los que no justifican son el grupo de hombres mayores a 65 años con 93.02%. Los demás grupos tienen porcentajes similares aunque de todas formas se nota una diferencia marginal entre ellos. En el gráfico comparativo dividido por las edades de las mujeres podemos observar que no hay una variación significativa, excepto por el grupo de 25 a 34 años que es el menor porcentaje con 87.73%, mientras que los demas grupos se mantienen con un porcentaje mayor a 90%. Con estos resultados, es sensible creer que la edad si puede ser un factor determinante de la justificación al aborto. 
+El último factor que se analizará sera la religión de los encuestados. Se consideran las religiones que existen el país o que son mayoría, incluyendo seis categorías: No creyente, Catolico, Protestante, Ortodoxo, Otros Cristianos y Otros. Se mantiene la desagregación por sexo. 
 
 ```{r Grafico religion Hombre, echo = FALSE, warning = FALSE, fig.dim = c(5,3)}
 religion_labs <- c("No creyente", "Catolico", "Protestante", "Ortodoxo", "Otro Cristiano", "Otro")
 names(religion_labs) <- c("0", "1", "2", "3", "8", "9")
 
-prop.table(table(data_aborto2018_Man %>% select(abortoDummy2018, religion)), margin = 2) %>% as.data.frame() %>% filter(abortoDummy2018 == "No justifica")
+# prop.table(table(data_aborto2018_Man %>% select(abortoDummy2018, religion)), margin = 2) %>% as.data.frame() %>% filter(abortoDummy2018 == "No justifica")
 
-prop.table(table(data_aborto2018_Man %>% select(abortoDummy2018, religion)), margin = 2) %>% as.data.frame() %>% filter(abortoDummy2018 == "No justifica") %>% 
-  ggplot(aes(x = religion, y = Freq, fill = abortoDummy2018)) + geom_bar(position = "stack", stat = "identity") + 
-  ggtitle("Grafico sobre los hombres")+
-  geom_text(aes(label = paste(round(Freq * 100, 2), "%")), size=4) + scale_x_discrete(labels = religion_labs) + 
-  theme(rect = element_blank(), legend.position = "none") + coord_flip()
-
+prop.table(table(data_aborto2018_Man %>% select(abortoDummy2018, religion)), margin = 2) %>% 
+  as.data.frame() %>% 
+  filter(abortoDummy2018 == "No justifica") %>% 
+  ggplot(aes(x = religion, y = Freq, fill = abortoDummy2018)) + 
+  geom_bar(position = "stack", stat = "identity") + 
+  labs(title = 'No justificación del aborto por religión del encuestado',
+       subtitle = 'Para encuestados hombres',
+       x = 'Religión', 
+       y = '% del total') +
+  geom_text(aes(label = paste(round(Freq * 100, 2), "%")), 
+            size = 4,
+            hjust = 2) + 
+  scale_x_discrete(labels = religion_labs) + 
+  theme_bw() + 
+  theme(legend.position = "none",
+        panel.grid = element_blank(),
+        axis.ticks.x = element_blank(),
+        axis.text.x = element_blank()) + 
+  coord_flip()
 ```
-
 ```{r Grafico religion Mujer, echo = FALSE, warning = FALSE, fig.dim = c(5,3)}
 
-prop.table(table(data_aborto2018_Woman %>% select(abortoDummy2018, religion)), margin = 2) %>% as.data.frame() %>% filter(abortoDummy2018 == "No justifica")
+# prop.table(table(data_aborto2018_Woman %>% select(abortoDummy2018, religion)), margin = 2) %>% as.data.frame() %>% filter(abortoDummy2018 == "No justifica")
 
-prop.table(table(data_aborto2018_Woman %>% select(abortoDummy2018, religion)), margin = 2) %>% as.data.frame() %>% filter(abortoDummy2018 == "No justifica") %>% 
-  ggplot(aes(x = religion, y = Freq, fill = abortoDummy2018)) + geom_bar(position = "stack", stat = "identity") + 
-  ggtitle("Grafico sobre las mujeres")+
-   geom_text(aes(label = paste(round(Freq * 100, 2), "%")), size=4) + scale_x_discrete(labels = religion_labs) + 
-  theme(rect = element_blank(), legend.position = "none") + coord_flip()
+prop.table(table(data_aborto2018_Woman %>% select(abortoDummy2018, religion)), margin = 2) %>%
+  as.data.frame() %>% 
+  filter(abortoDummy2018 == "No justifica") %>% 
+  ggplot(aes(x = religion, y = Freq, fill = abortoDummy2018)) + 
+  geom_bar(position = "stack", stat = "identity") + 
+    labs(title = 'No justificación del aborto por religión del encuestado',
+       subtitle = 'Para encuestadas mujeres',
+       x = 'Religión', 
+       y = '% del total') +
+  geom_text(aes(label = paste(round(Freq * 100, 2), "%")), size=4) + 
+  scale_x_discrete(labels = religion_labs) + 
+  theme_bw() + 
+  theme(legend.position = "none",
+        panel.grid = element_blank(),
+        axis.ticks.x = element_blank(),
+        axis.text.x = element_blank()) + 
+  coord_flip()
 ```
 
-En el grafico dividido por religión de los hombres, podemos observar una mayor diferencia en dos grupos: el grupo de otras religiones se mantiene con el menor porcentaje que no justifican el aborto con 60%, mientras que el grupo de los protestantes se mantiene un 100% que no justifican el aborto, además podemos observar que los demás grupos (otros cristianos, catolicos y no creyentes) tienen porcentajes similares que se mantienen entre el 80% a 90%. En el grafico dividido por religión de las mujeres, podemos observar que los grupos de otras religiones, ortodoxo y protestantes tienen un 100% que no justifican el aborto, mientas que los otros grupos (otras cristianas, catolicas y no creyentes) tienen porcentajes similares que no justifican el aborto, siendo el menor porcentaje el grupo de catolicas. Con eso podemos observar que la religión se puede considerar como un factor importante sobre si justifican o no justican el aborto, principalmente en la diferencia de como afecta a los hombres y a las mujeres.
+En el grafico dividido por religión de los hombres, se encuentra mucha heterogeneidad. Podemos observar una mayor diferencia en dos grupos: el grupo de otras religiones se mantiene con el menor porcentaje de no justificación con un 60% que no lo aprueba, mientras que el grupo de los protestantes se mantiene con un sorprendente 100% que no justifica. Además, podemos observar que los demás grupos (otros cristianos, catolicos y no creyentes) tienen porcentajes similares que se mantienen entre el 80% a 90%. 
+
+En el gráfico dividido por religión de mujeres, los grupos tienen porcentajes de no justificación más similares entre sí. Podemos observar que los grupos de otras religiones, ortodoxo y protestantes tienen un 100% que no justifican el aborto, mientas que los otros grupos (otras cristianas, catolicas y no creyentes) tienen porcentajes similares que no justifican el aborto, siendo el menor porcentaje el grupo de católicas. Con este análisis, podemos observar que la religión probablemente se puede considerar como un factor importante sobre si justifican o no justican el aborto, tomando en cuenta las diferentes situaciones que existen entre hombres y mujeres para este factor.
 
 ## Observaciones Finales
 
-Para facilitar los analisis, se ha eliminado las respuestas de que no conocen el tema o no tiene una postura sobre el tema, además de los que no respondieron esa pregunta.
+De todos los factores estudiados, podemos encontrar que algunos factores siguen la tendencia de la WVS de 2013, sin embargo, existen algunos factores que han cambiado respecto a ese año. Podemos concluir que el nivel educativo no tiene significancia en el tema, por otro lado, las edades pueden ser consideradas un factor importante. El hallazgo más importante puede considerarse la religión y su efecto en la justificación, tomando en cuenta la diferencia entre hombres y mujeres. Los hombres varían mucho a lo largo de grupos religiosos en su porcentaje de justificación, siendo aquellos que pertenencen a religiones no dominantes en el pais. Las mujeres muestran más homogeneidad a lo largo de grupos religiosos. 
 
-Algo que tenemos que tomar en cuenta en los analisis que se ha realizado es que utilizamos una variable creada que divide las respuestas en dos: "Justifica" y "No justifica". Originalmente, las respuestas sobre si justifican el aborto van de 1 a 10, siendo 1 que nunca justifica y 10 que siempre justifica, de esa forma divimos las respuestas: entre 1 a 6 seran considerados como "No justifica" el aborto, mientras que las respuestas entre 7 a 10 seran consideradas como "Justifica" el aborto.
+En conclusión, aunque evidenciamos algunos cambios en actitudes públicas frente al aborto, no se evidencia un cambio radical en pensamiento entre 2013 y 2018. Esto tiene sentido puesto que es común observar que las actitudes sociales toman mucho tiempo en cambiar. La encuesta utilizada para este articulo fue realizada en el 2018 se podría esperar que no sea totalmente fiel a la actualidad de nuestro país. El análisis de la encuesta de 2018 nos muestra las actitudes que preceden la decisión de la Corte Constitucional, sin embargo, no podemos predecir que estas actitudes se mantuvieron iguales después del evento, de hecho, probablemente cambiaron. Un análisis de las próximas rondas de la WVS sería muy útil para poder inferir el efecto de la decisión en el cambio, pero es complicado descomponer el efecto entre lo que causó la decisión de la CC y lo que pudo haber causado la pandemia del COVID-19. En una próxima entrega, El Quantificador continuará realizando seguimiento a este tema. 
 
-También, a partir de la división de las respuestas por el sexo del encuestado, separamos la base de datos en dos grupos, siendo: las respuestas de los hombres y las respuestas de las mujeres.
-
-De todos los factores estudiados podemos concluir que el nivel educativo no tiene significancia en el tema, las edades pueden ser consideradas un factor importante al igual que la religión pero también tomando en cuenta la diferencia entre hombres y mujeres sobre como le afectan los factores. 
-El pensamiento ecuatoriano sobre el aborto ha ido cambiando con el tiempo, eso lo podemos observar en la historia del país y en el actual articulo con el grafico comparativo entre el 2013 y el 2018, pero la epoca no es lo unico que puede variar el pensamiento sino tambien otros factores en nuestras vidas.
-
-Como la encuesta utilizada para este articulo fue realizada en el 2018 se podría esperar que no sea totalmente fiel a la actualidad de nuestro país, por esa razón después se realizara seguimiento a la pregunta que ya se ha planteado en la pagina y si alguno tiene una duda sobre los analisis realizados en el actual articulo no dude en ponerse en contacto.
+*Todos los cálculos y gráficos presentes en este artículo se encuentran en el [repositorio de GitHub del artículo](https://github.com/joyceliss/LIDE_ESPOL_Joyce_Sarmiento). En el perfil de la misma encontrarán datos de contacto para cualquier comentario o pregunta sobre éste artículo.*
 
 ## Referencias
 * «ABORTO: ¿qué piensan los ecuatorianos?», 2 de noviembre de 2020. https://elquantificador.org/post/valores/los-ecuatorianos-aprueban-el-aborto/.
